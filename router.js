@@ -3,7 +3,7 @@ const { createBarber, getAllBarbers, getBarberById, updateBarber, deleteBarber, 
 const { createLocation, getAllLocations, getLocationById, updateLocation, deleteLocation } = require("./controllers/Location");
 const { createService, getAllServices, getServiceById, updateService, deleteService } = require("./controllers/Service");
 const { createSlot, getAllSlots, getSlotById, updateSlot, deleteSlot } = require("./controllers/Slot");
-const { createAppointment, getAllAppointments, getAppointmentById, updateAppointment, deleteAppointment } = require("./controllers/Appointment");
+const { createAppointment, getAllAppointments, getAppointmentById, updateAppointment, deleteAppointment, cancelAppointment } = require("./controllers/Appointment");
 const { createAboutUs, getAllAboutUs, getAboutUsById, updateAboutUsById, deleteAboutUsById } = require("./controllers/AboutUs");
 const { createComment, getAllComments, getCommentById, updateCommentById, deleteCommentById } = require("./controllers/Comment");
 
@@ -56,6 +56,8 @@ router.get("/appointments/:id", getAppointmentById);
 router.post("/appointments", createAppointment);
 router.put("/appointments/:id", updateAppointment);
 router.delete("/appointments/:id", deleteAppointment);
+
+router.post("/appointments/cancel/:id", cancelAppointment);
 
 // About Us routes
 router.get("/aboutus", getAllAboutUs);

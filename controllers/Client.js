@@ -12,7 +12,7 @@ const authClient = async (req, res) => {
             res.status(401).json({ message: "Unauthorized" });
         }
 
-        const { name, given_name, family_name, email, picture } = decodedToken;
+        const { name, given_name, family_name, email } = decodedToken;
 
         let client = await Client.findOne({ email });
 

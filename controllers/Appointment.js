@@ -1,4 +1,5 @@
 const Appointment = require("../models/Appointment");
+const { tokenValidation } = require("../tools");
 
 // Create a new appointment
 const createAppointment = async (req, res) => {
@@ -23,15 +24,14 @@ const getAllAppointments = async (req, res) => {
 
 // Get a single appointment by ID
 const getAppointmentById = async (req, res) => {
-    // const token = req.headers.authorization;
+    const token = req.headers.authorization;
     try {
-        // const decodedToken = await tokenValidation(token);
-        // if (!decodedToken) {
-        //     res.status(401).json({ message: "Unauthorized" });
-        //     return;
-        // }
-        // const { email } = decodedToken;
-        const email = 'daniel.houriecole@gmail.com'
+        const decodedToken = await tokenValidation(token);
+        if (!decodedToken) {
+            res.status(401).json({ message: "Unauthorized" });
+            return;
+        }
+        const { email } = decodedToken;
 
         const appointment = await Appointment.findById(req.params.id)
             .populate('barber', 'name email profilePicture')
@@ -92,4 +92,46 @@ const deleteAppointment = async (req, res) => {
     }
 };
 
-module.exports = { createAppointment, getAllAppointments, getAppointmentById, updateAppointment, deleteAppointment, };
+// Cancel an apointment
+const cancelAppointment = async (req, res) => {
+    const token = req.headers.authorization;
+    try {
+        const decodedToken = await tokenValidation(token);
+        if (!decodedToken) {
+            res.status(401).json({ message: "Unauthorized" });
+            return;
+        }
+        const { email } = decodedToken;
+
+        const appointment = await Appointment.findById(req.params.id).populate([
+            {
+                path: "client",
+                select: "email",
+            },
+            {
+                path: "barber",
+                select: "email",
+            },
+        ]);
+
+        if (!appointment) {
+            res.status(404).send("Appointment not found");
+            return;
+        }
+
+        if (appointment.client.email !== email && appointment.barber.email !== email) {
+            res.status(401).json({ message: "Unauthorized" });
+            return;
+        }
+
+        appointment.status = "cancelled";
+
+        await appointment.save();
+        res.send(appointment);
+    } catch (err) {
+        res.status(500).send(err);
+    }
+};
+
+
+module.exports = { createAppointment, getAllAppointments, getAppointmentById, updateAppointment, deleteAppointment, cancelAppointment };
