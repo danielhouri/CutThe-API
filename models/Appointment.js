@@ -11,7 +11,11 @@ const AppointmentSchema = new mongoose.Schema({
         ref: 'Client',
         required: true
     },
-    date: {
+    start_time: {
+        type: Date,
+        required: true
+    },
+    end_time: {
         type: Date,
         required: true
     },
@@ -32,7 +36,7 @@ const AppointmentSchema = new mongoose.Schema({
 });
 
 AppointmentSchema.pre('save', function (next) {
-    if (this.status === 'scheduled' && this.date < new Date()) {
+    if (this.status === 'scheduled' && this.start_time < new Date()) {
         this.status = 'completed';
     }
     next();

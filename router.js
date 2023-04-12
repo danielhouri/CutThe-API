@@ -7,9 +7,7 @@ const { createAppointment, getAllAppointments, getAppointmentById, updateAppoint
 const { createAboutUs, getAllAboutUs, getAboutUsById, updateAboutUsById, deleteAboutUsById } = require("./controllers/AboutUs");
 const { createComment, getAllComments, getCommentById, updateCommentById, deleteCommentById } = require("./controllers/Comment");
 
-
 const router = require("express").Router();
-
 
 // Auth routes
 router.post("/clients/auth", authClient);

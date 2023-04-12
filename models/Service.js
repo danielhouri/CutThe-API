@@ -1,6 +1,5 @@
 const mongoose = require("mongoose");
 
-
 const ServiceSchema = new mongoose.Schema({
   barber: {
     type: mongoose.Schema.Types.ObjectId,
@@ -11,8 +10,14 @@ const ServiceSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-  duration: { type: Number },
-  price: { type: Number },
+  duration: {
+    type: Number,
+    default: 0
+  },
+  price: {
+    type: Number,
+    default: 0
+  },
 });
 
 module.exports = mongoose.model('Service', ServiceSchema);
