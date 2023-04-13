@@ -117,6 +117,7 @@ const getClientAppointments = async (req, res) => {
                 options: { sort: { date: -1 } } // sort appointments by date in descending order
             })
             .exec();
+
         if (!client) {
             res.status(404).send("Client not found");
         } else {

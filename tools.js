@@ -1,10 +1,7 @@
 const { OAuth2Client } = require('google-auth-library')
 require("dotenv").config({ path: "./tools.env" });
-
 const Slot = require("./models/Slot");
 const Appointment = require("./models/Appointment");
-const moment = require('moment/moment');
-
 const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID)
 
 const tokenValidation = async (token) => {
@@ -26,6 +23,7 @@ const tokenValidation = async (token) => {
 };
 
 async function getAvailableSlots(barberId, locationId, date) {
+    // Find all slots for the given barber, location, and date
     const slots = await Slot.find({
         barber: barberId,
         location: locationId,
@@ -33,6 +31,7 @@ async function getAvailableSlots(barberId, locationId, date) {
         end_time: { $lte: new Date(date).setHours(23, 59, 59, 999) },
     });
 
+    // Find all appointments for the given barber, location, and date
     const appointments = await Appointment.find({
         barber: barberId,
         location: locationId,
@@ -46,67 +45,69 @@ async function getAvailableSlots(barberId, locationId, date) {
 
     // Calculate the gaps between time blocks
     const availableTimeSlots = [];
-
-    lastAppointnemtIndex = 0
+    lastAppointmentIndex = 0
+    lastAppointmentInSlot = null
 
     for (let i = 0; i < slots.length; i++) {
         const currentSlot = slots[i];
 
-        for (j = lastAppointnemtIndex; j < appointments.length; j++) {
-            currentAppointment = appointments[j];
-            lastFreeTimeSlots = availableTimeSlots[availableTimeSlots.length - 1]
+        while (lastAppointmentIndex < appointments.length) {
+            currentAppointment = appointments[lastAppointmentIndex];
+            lastAppointment = appointments[lastAppointmentIndex - 1]
 
             if (currentSlot.end_time < currentAppointment.start_time) {
-                lastAppointnemtIndex = j;
+                lastAppointmentInSlot = appointments[lastAppointmentIndex - 1];
                 break;
             }
 
-            if (lastFreeTimeSlots &&
-                currentSlot.start_time < lastFreeTimeSlots.start_time &&
-                lastFreeTimeSlots.end_time < currentAppointment.start_time) {
+            if (lastAppointment &&
+                (currentSlot.start_time <= lastAppointment.start_time) &&
+                (lastAppointment.end_time <= currentSlot.end_time) &&
+                (lastAppointment.end_time < currentAppointment.start_time)) {
                 const availableSlot = {
-                    start_time: lastFreeTimeSlots.end_time,
+                    start_time: lastAppointment.end_time,
                     end_time: currentAppointment.start_time,
-                    type: "available",
+                    type: "available1",
                 };
                 availableTimeSlots.push(availableSlot);
             }
 
-            else if (currentSlot.start_time < currentAppointment.start_time) {
+            else if (!lastAppointment || (lastAppointment && !((currentSlot.start_time <= lastAppointment.start_time) && (lastAppointment.end_time <= currentSlot.end_time)))
+                && (currentSlot.start_time < currentAppointment.start_time)) {
                 const availableSlot = {
                     start_time: currentSlot.start_time,
                     end_time: currentAppointment.start_time,
-                    type: "available",
+                    type: "available2",
                 };
                 availableTimeSlots.push(availableSlot);
             }
-        }
-        lastAppointmentInSlot = appointments[lastAppointnemtIndex];
 
-        if (currentSlot.start_time <= lastAppointmentInSlot.start_time && lastAppointmentInSlot.end_time < currentSlot.end_time) {
+            lastAppointmentInSlot = appointments[lastAppointmentIndex];
+            lastAppointmentIndex++;
+        }
+
+        if ((currentSlot.start_time <= lastAppointmentInSlot.start_time) && (lastAppointmentInSlot.end_time < currentSlot.end_time)) {
             const availableSlot = {
                 start_time: lastAppointmentInSlot.end_time,
                 end_time: currentSlot.end_time,
-                type: "available",
+                type: "available3",
             };
             availableTimeSlots.push(availableSlot);
         }
-        else {
+        else if (lastAppointmentInSlot.end_time < currentSlot.start_time) {
             const availableSlot = {
                 start_time: currentSlot.start_time,
                 end_time: currentSlot.end_time,
-                type: "available",
+                type: "available4",
             };
             availableTimeSlots.push(availableSlot);
         }
     }
 
-
     console.log(availableTimeSlots)
     return availableTimeSlots;
 }
 
+// getAvailableSlots('6433a0ff281cd4be80616fd9', '6433a16a281cd4be80616fdb', '2023-04-11')
 
-getAvailableSlots('6433a0ff281cd4be80616fd9', '6433a16a281cd4be80616fdb', '2023-04-11')
-
-module.exports = { tokenValidation };
+module.exports = { tokenValidation, getAvailableSlots };

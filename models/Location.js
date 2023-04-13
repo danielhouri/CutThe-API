@@ -9,6 +9,14 @@ const LocationSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    city: {
+        type: String,
+        required: true
+    },
+    country: {
+        type: String,
+        required: true
+    },
     services: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Service'
@@ -16,7 +24,11 @@ const LocationSchema = new mongoose.Schema({
     slots: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Slot'
-    }]
+    }],
+    barber: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Barber'
+    }
 });
 
 module.exports = mongoose.model('Location', LocationSchema);

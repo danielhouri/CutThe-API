@@ -14,6 +14,7 @@ const createAppointment = async (req, res) => {
 
 // Get all appointments
 const getAllAppointments = async (req, res) => {
+    console.log(req)
     try {
         const appointments = await Appointment.find();
         res.send(appointments);
@@ -43,10 +44,12 @@ const getAppointmentById = async (req, res) => {
 
         if (!appointment) {
             res.status(404).send("Appointment not found");
+            return;
         }
 
         if (appointment.barber.email !== email && appointment.client.email !== email) {
             res.status(401).json({ message: "Unauthorized" });
+            return;
         }
 
         res.send(appointment);
