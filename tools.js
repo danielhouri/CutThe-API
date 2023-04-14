@@ -1,7 +1,12 @@
-const { OAuth2Client } = require('google-auth-library')
+const { OAuth2Client } = require('google-auth-library');
 require("dotenv").config({ path: "./tools.env" });
+
 const Slot = require("./models/Slot");
 const Appointment = require("./models/Appointment");
+const Location = require('./models/Location');
+const Barber = require('./models/Barber');
+const geolib = require('geolib');
+
 const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID)
 
 const tokenValidation = async (token) => {
@@ -109,5 +114,32 @@ async function getAvailableSlots(barberId, locationId, date) {
 }
 
 // getAvailableSlots('6433a0ff281cd4be80616fd9', '6433a16a281cd4be80616fdb', '2023-04-11')
+
+async function findClosestBarber(city, country, coordinates) {
+    // Find all locations in the same city and country
+    const locations = await Location.find({ city, country }).populate('barber slots');
+
+    // Calculate the distance between the current location and each location
+    const distances = locations.map((location) => {
+        console.log(location.coordinates)
+        const distance = geolib.getDistance(
+            { latitude: coordinates.latitude, longitude: coordinates.longitude },
+            { latitude: location.coordinates.coordinates[0], longitude: location.coordinates.coordinates[1] }
+        );
+        return { location, distance };
+    });
+
+    // Sort the distances in ascending order
+    distances.sort((a, b) => a.distance - b.distance);
+
+    // Return the barber for the closest location
+    const closestBarber = distances[0].location.barber;
+    const closestLocation = distances[0].location;
+
+
+    console.log(distances)
+
+    return { closestBarber, closestLocation };
+}
 
 module.exports = { tokenValidation, getAvailableSlots };

@@ -1,6 +1,5 @@
 const Location = require("../models/Location");
 
-
 // Create a new location
 const createLocation = async (req, res) => {
     try {
