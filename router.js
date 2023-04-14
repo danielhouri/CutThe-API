@@ -1,5 +1,5 @@
 const { createClient, getClientById, updateClient, deleteClient, authClient, getClientAppointments } = require("./controllers/Client");
-const { createBarber, getAllBarbers, getBarberById, updateBarber, deleteBarber, authBarber } = require("./controllers/Barber");
+const { createBarber, getAllBarbers, getBarberById, updateBarber, deleteBarber, authBarber, getClosestBarber } = require("./controllers/Barber");
 const { createLocation, getAllLocations, getLocationById, updateLocation, deleteLocation } = require("./controllers/Location");
 const { createService, getAllServices, getServiceById, updateService, deleteService } = require("./controllers/Service");
 const { createSlot, getAllSlots, getSlotById, updateSlot, deleteSlot } = require("./controllers/Slot");
@@ -23,6 +23,7 @@ router.get("/clients/appointments", getClientAppointments);
 // Barber routes
 router.get("/barbers", getAllBarbers);
 router.get("/barbers/:id", getBarberById);
+router.get('/barbers/closest/:city/:country/:address', getClosestBarber);
 router.post("/barbers", createBarber);
 router.put("/barbers/:id", updateBarber);
 router.delete("/barbers/:id", deleteBarber);

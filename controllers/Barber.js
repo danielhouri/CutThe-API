@@ -3,6 +3,8 @@ require("dotenv").config({ path: "./tools.env" });
 const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID)
 
 const Barber = require("../models/Barber");
+const { findClosestBarber } = require('../tools');
+
 
 const authBarber = async (req, res) => {
     const { token } = req.body;
@@ -97,4 +99,28 @@ const deleteBarber = async (req, res) => {
     }
 };
 
-module.exports = { createBarber, getAllBarbers, getBarberById, updateBarber, deleteBarber, authBarber };
+// Get the closest barber
+const getClosestBarber = async (req, res) => {
+    const token = req.headers.authorization;
+
+    try {
+        const decodedToken = await tokenValidation(token);
+        if (!decodedToken) {
+            console.log(decodedToken)
+            res.status(401).json({ message: "Unauthorized" });
+        }
+
+        const { city, country, address } = req.params;
+        returnedList = findClosestBarber(city, country, address);
+
+        if (!returnedList) {
+            res.status(404).send("Location not found");
+        } else {
+            res.send(returnedList);
+        }
+    } catch (err) {
+        res.status(500).send(err);
+    }
+};
+
+module.exports = { createBarber, getAllBarbers, getBarberById, updateBarber, deleteBarber, authBarber, getClosestBarber };

@@ -4,6 +4,7 @@ const express = require('express');
 const dotenv = require("dotenv");
 const cors = require("cors");
 const bodyParser = require('body-parser');
+const { removeExpiredSlots } = require("./tools");
 
 const app = express();
 app.use(cors());
@@ -26,6 +27,9 @@ mongoose
         console.log(err);
     });
 
+
+// Call the function once a day (every 24 hours) to remove expired slots
+setInterval(removeExpiredSlots, 24 * 60 * 60 * 1000);
 
 // Start the server and listen on a specific port
 app.listen(3000, () => {

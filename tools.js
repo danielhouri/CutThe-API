@@ -121,7 +121,6 @@ async function findClosestBarber(city, country, coordinates) {
 
     // Calculate the distance between the current location and each location
     const distances = locations.map((location) => {
-        console.log(location.coordinates)
         const distance = geolib.getDistance(
             { latitude: coordinates.latitude, longitude: coordinates.longitude },
             { latitude: location.coordinates.coordinates[0], longitude: location.coordinates.coordinates[1] }
@@ -132,14 +131,26 @@ async function findClosestBarber(city, country, coordinates) {
     // Sort the distances in ascending order
     distances.sort((a, b) => a.distance - b.distance);
 
-    // Return the barber for the closest location
-    const closestBarber = distances[0].location.barber;
-    const closestLocation = distances[0].location;
+    // Return the barbers for the closest 5 locations
+    const closestBarbers = distances.slice(0, 5).map((distance) => distance.location.barber);
+    const closestLocations = distances.slice(0, 5).map((distance) => distance.location);
 
-
-    console.log(distances)
-
-    return { closestBarber, closestLocation };
+    return { closestBarbers, closestLocations };
 }
 
-module.exports = { tokenValidation, getAvailableSlots };
+async function removeExpiredSlots() {
+    console.log('Remove expired slots');
+
+    const expiredSlots = await Slot.find({ end_time: { $lt: new Date() } });
+    for (let i = 0; i < expiredSlots.length; i++) {
+        const slot = expiredSlots[i];
+
+        // Remove the slot from the location's slots array
+        await Location.findByIdAndUpdate(slot.location, { $pull: { slots: slot._id } });
+
+        // Remove the slot from the database
+        await Slot.findByIdAndRemove(slot._id);
+    }
+}
+
+module.exports = { tokenValidation, getAvailableSlots, removeExpiredSlots, findClosestBarber };
