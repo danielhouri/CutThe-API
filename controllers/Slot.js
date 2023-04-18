@@ -70,4 +70,20 @@ const deleteSlot = async (req, res) => {
     }
 };
 
-module.exports = { createSlot, getAllSlots, getSlotById, updateSlot, deleteSlot, };
+const getSlotsByBarberAndLocation = async (req, res) => {
+    const { barberId, locationId } = req.params;
+
+    try {
+        const slots = await Slot.find({
+            barber: barberId,
+            location: locationId
+        });
+
+        res.send(slots);
+    } catch (err) {
+        res.status(500).send(err);
+    }
+};
+
+
+module.exports = { createSlot, getAllSlots, getSlotById, updateSlot, deleteSlot, getSlotsByBarberAndLocation };

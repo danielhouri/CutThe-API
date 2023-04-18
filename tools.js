@@ -5,7 +5,10 @@ const Slot = require("./models/Slot");
 const Appointment = require("./models/Appointment");
 const Location = require('./models/Location');
 const Barber = require('./models/Barber');
+const Comment = require('./models/Comment');
+
 const geolib = require('geolib');
+const moment = require('moment/moment');
 
 const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID)
 
@@ -113,9 +116,7 @@ async function getAvailableSlots(barberId, locationId, date) {
     return availableTimeSlots;
 }
 
-// getAvailableSlots('6433a0ff281cd4be80616fd9', '6433a16a281cd4be80616fdb', '2023-04-11')
-
-async function findClosestBarber(city, country, coordinates) {
+async function findClosestBarbers(city, country, coordinates) {
     // Find all locations in the same city and country
     const locations = await Location.find({ city, country }).populate('barber slots');
 
@@ -131,11 +132,34 @@ async function findClosestBarber(city, country, coordinates) {
     // Sort the distances in ascending order
     distances.sort((a, b) => a.distance - b.distance);
 
-    // Return the barbers for the closest 5 locations
-    const closestBarbers = distances.slice(0, 5).map((distance) => distance.location.barber);
-    const closestLocations = distances.slice(0, 5).map((distance) => distance.location);
+    // Get the current day slot
+    const startToday = moment().utc().startOf('day');
+    const endToday = moment().utc().endOf('day');
 
-    return { closestBarbers, closestLocations };
+    // Return the 10 closest barbers
+    const closestBarbers = distances.slice(0, 10).map(async (distance) => {
+        const barber = distance.location.barber;
+        const comments = await Comment.find({ barber: barber._id });
+        const avgRating = comments.reduce((acc, comment) => acc + comment.rating, 0) / comments.length;
+
+        // Get the slots for today
+        const slots = await Slot.find({
+            barber: barber._id,
+            start_time: { $gte: startToday.toDate() },
+            end_time: { $lte: endToday.toDate() }
+        });
+
+        return {
+            barber,
+            avgRating,
+            numComments: comments.length,
+            distance: distance.distance / 1000,
+            slots
+        };
+    });
+
+    const results = await Promise.all(closestBarbers);
+    return results;
 }
 
 async function removeExpiredSlots() {
@@ -153,4 +177,4 @@ async function removeExpiredSlots() {
     }
 }
 
-module.exports = { tokenValidation, getAvailableSlots, removeExpiredSlots, findClosestBarber };
+module.exports = { tokenValidation, getAvailableSlots, removeExpiredSlots, findClosestBarbers };

@@ -70,4 +70,16 @@ const deleteService = async (req, res) => {
     }
 };
 
-module.exports = { createService, getAllServices, getServiceById, updateService, deleteService, };
+// Get services of a baber
+const getServicesByBarberId = async (req, res) => {
+    try {
+        const barberId = req.params.id;
+        const services = await Service.find({ barber: barberId });
+        res.send(services);
+    } catch (err) {
+        res.status(500).send(err);
+    }
+};
+
+
+module.exports = { createService, getAllServices, getServiceById, updateService, deleteService, getServicesByBarberId };

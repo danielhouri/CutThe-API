@@ -3,13 +3,11 @@ require("dotenv").config({ path: "./tools.env" });
 const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID)
 
 const Barber = require("../models/Barber");
-const { findClosestBarber } = require('../tools');
+const { findClosestBarbers, tokenValidation } = require('../tools');
 
 
 const authBarber = async (req, res) => {
     const { token } = req.body;
-
-    console.log(token)
 
     try {
         // verify token using Google API
@@ -57,7 +55,10 @@ const getAllBarbers = async (req, res) => {
 // Get a single barber by ID
 const getBarberById = async (req, res) => {
     try {
-        const barber = await Barber.findById(req.params.id);
+        const barber = await Barber.findById(req.params.id)
+            .select('name preferred_location profilePicture')
+            .populate('preferred_location', 'name');
+
         if (!barber) {
             res.status(404).send("Barber not found");
         } else {
@@ -67,6 +68,7 @@ const getBarberById = async (req, res) => {
         res.status(500).send(err);
     }
 };
+
 
 // Update a barber by ID
 const updateBarber = async (req, res) => {
@@ -101,17 +103,25 @@ const deleteBarber = async (req, res) => {
 
 // Get the closest barber
 const getClosestBarber = async (req, res) => {
-    const token = req.headers.authorization;
-
     try {
+        const token = req.headers.authorization;
         const decodedToken = await tokenValidation(token);
+
         if (!decodedToken) {
             console.log(decodedToken)
             res.status(401).json({ message: "Unauthorized" });
+            return
+        }
+        const { city, country, lat, lon } = req.params;
+        console.log(req.params)
+
+        // Check if any of the parameters are undefined
+        if (city === undefined || country === undefined || lat === undefined || lon === undefined) {
+            res.status(400).send("Bad Request: Missing parameter(s)");
+            return;
         }
 
-        const { city, country, address } = req.params;
-        returnedList = findClosestBarber(city, country, address);
+        returnedList = await findClosestBarbers(city, country, { latitude: lat, longitude: lon });
 
         if (!returnedList) {
             res.status(404).send("Location not found");

@@ -1,8 +1,8 @@
 const { createClient, getClientById, updateClient, deleteClient, authClient, getClientAppointments } = require("./controllers/Client");
 const { createBarber, getAllBarbers, getBarberById, updateBarber, deleteBarber, authBarber, getClosestBarber } = require("./controllers/Barber");
-const { createLocation, getAllLocations, getLocationById, updateLocation, deleteLocation } = require("./controllers/Location");
-const { createService, getAllServices, getServiceById, updateService, deleteService } = require("./controllers/Service");
-const { createSlot, getAllSlots, getSlotById, updateSlot, deleteSlot } = require("./controllers/Slot");
+const { createLocation, getAllLocations, getLocationById, updateLocation, deleteLocation, getBarberLocations } = require("./controllers/Location");
+const { createService, getAllServices, getServiceById, updateService, deleteService, getServicesByBarberId } = require("./controllers/Service");
+const { createSlot, getAllSlots, getSlotById, updateSlot, deleteSlot, getSlotsByBarberAndLocation } = require("./controllers/Slot");
 const { createAppointment, getAllAppointments, getAppointmentById, updateAppointment, deleteAppointment, cancelAppointment } = require("./controllers/Appointment");
 const { createAboutUs, getAllAboutUs, getAboutUsById, updateAboutUsById, deleteAboutUsById } = require("./controllers/AboutUs");
 const { createComment, getAllComments, getCommentById, updateCommentById, deleteCommentById } = require("./controllers/Comment");
@@ -23,10 +23,10 @@ router.get("/clients/appointments", getClientAppointments);
 // Barber routes
 router.get("/barbers", getAllBarbers);
 router.get("/barbers/:id", getBarberById);
-router.get('/barbers/closest/:city/:country/:address', getClosestBarber);
 router.post("/barbers", createBarber);
 router.put("/barbers/:id", updateBarber);
 router.delete("/barbers/:id", deleteBarber);
+router.get("/barbers/closest/:city/:country/:lat/:lon", getClosestBarber);
 
 // Location routes
 router.get("/locations", getAllLocations);
@@ -34,6 +34,7 @@ router.get("/locations/:id", getLocationById);
 router.post("/locations", createLocation);
 router.put("/locations/:id", updateLocation);
 router.delete("/locations/:id", deleteLocation);
+router.get("/locations/baber/:id", getBarberLocations);
 
 // Service routes
 router.get("/services", getAllServices);
@@ -41,6 +42,7 @@ router.get("/services/:id", getServiceById);
 router.post("/services", createService);
 router.put("/services/:id", updateService);
 router.delete("/services/:id", deleteService);
+router.get("/services/barber/:id", getServicesByBarberId);
 
 // Slot routes
 router.get("/slots", getAllSlots);
@@ -48,6 +50,7 @@ router.get("/slots/:id", getSlotById);
 router.post("/slots", createSlot);
 router.put("/slots/:id", updateSlot);
 router.delete("/slots/:id", deleteSlot);
+router.get("/slots/:barberId/:locationId", getSlotsByBarberAndLocation);
 
 // Appointment routes
 router.get("/appointments", getAllAppointments);

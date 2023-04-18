@@ -10,6 +10,7 @@ const authClient = async (req, res) => {
         if (!decodedToken) {
             console.log(decodedToken)
             res.status(401).json({ message: "Unauthorized" });
+            return;
         }
 
         const { name, given_name, family_name, email } = decodedToken;
@@ -47,13 +48,13 @@ const createClient = async (req, res) => {
 };
 
 const getClientById = async (req, res) => {
-    const token = req.headers.authorization;
-
     try {
+        const token = req.headers.authorization;
         const decodedToken = await tokenValidation(token);
         if (!decodedToken) {
             console.log(decodedToken)
             res.status(401).json({ message: "Unauthorized" });
+            return;
         }
         const { email } = decodedToken;
 
@@ -83,6 +84,7 @@ const getClientById = async (req, res) => {
             .exec();
         if (!client) {
             res.status(404).send("Client not found");
+            return;
         } else {
             res.send(client);
         }
@@ -98,6 +100,7 @@ const getClientAppointments = async (req, res) => {
         if (!decodedToken) {
             console.log(decodedToken)
             res.status(401).json({ message: "Unauthorized" });
+            return;
         }
         const { email } = decodedToken;
 

@@ -1,6 +1,5 @@
 const mongoose = require("mongoose");
 
-// Define the Comment schema
 const commentSchema = new mongoose.Schema({
     client: {
         type: mongoose.Schema.Types.ObjectId,

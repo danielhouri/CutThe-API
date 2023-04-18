@@ -66,8 +66,25 @@ const deleteLocation = async (req, res) => {
             res.send(location);
         }
     } catch (err) {
+        console.log(err)
         res.status(500).send(err);
     }
 };
 
-module.exports = { createLocation, getAllLocations, getLocationById, updateLocation, deleteLocation, };
+const getBarberLocations = async (req, res) => {
+    try {
+        const barberId = req.params.id;
+        const locations = await Location.find({ barber: barberId }).select('name address city country');
+
+        if (!locations || locations.length === 0) {
+            res.status(404).send("No locations found for the barber");
+        } else {
+            res.send(locations);
+        }
+    } catch (err) {
+        res.status(500).send(err);
+    }
+};
+
+
+module.exports = { createLocation, getAllLocations, getLocationById, updateLocation, deleteLocation, getBarberLocations };
