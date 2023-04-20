@@ -1,4 +1,5 @@
 const Slot = require("../models/Slot");
+const { getAvailableSlots } = require("../tools");
 
 // Create a new slot
 const createSlot = async (req, res) => {
@@ -74,11 +75,7 @@ const getSlotsByBarberAndLocation = async (req, res) => {
     const { barberId, locationId } = req.params;
 
     try {
-        const slots = await Slot.find({
-            barber: barberId,
-            location: locationId
-        });
-
+        const slots = await getAvailableSlots(barberId, locationId);
         res.send(slots);
     } catch (err) {
         res.status(500).send(err);

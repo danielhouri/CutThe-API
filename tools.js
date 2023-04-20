@@ -30,21 +30,20 @@ const tokenValidation = async (token) => {
     }
 };
 
-async function getAvailableSlots(barberId, locationId, date) {
+async function getAvailableSlots(barberId, locationId) {
+
     // Find all slots for the given barber, location, and date
     const slots = await Slot.find({
         barber: barberId,
         location: locationId,
-        start_time: { $gte: new Date(date) },
-        end_time: { $lte: new Date(date).setHours(23, 59, 59, 999) },
+        start_time: { $gte: moment.utc().startOf('day') },
     });
 
     // Find all appointments for the given barber, location, and date
     const appointments = await Appointment.find({
         barber: barberId,
         location: locationId,
-        start_time: { $gte: new Date(date) },
-        end_time: { $lte: new Date(date).setHours(23, 59, 59, 999) },
+        start_time: { $gte: moment.utc().startOf('day') },
     });
 
     // Sort the time blocks by start time
@@ -64,7 +63,18 @@ async function getAvailableSlots(barberId, locationId, date) {
             lastAppointment = appointments[lastAppointmentIndex - 1]
 
             if (currentSlot.end_time < currentAppointment.start_time) {
-                lastAppointmentInSlot = appointments[lastAppointmentIndex - 1];
+                if (lastAppointmentIndex != 0) {
+                    lastAppointmentInSlot = appointments[lastAppointmentIndex - 1];
+                }
+                else {
+                    lastAppointmentInSlot = appointments[lastAppointmentIndex];
+                    const availableSlot = {
+                        start_time: currentSlot.start_time,
+                        end_time: currentSlot.end_time,
+                        type: "available0",
+                    };
+                    availableTimeSlots.push(availableSlot);
+                }
                 break;
             }
 
@@ -80,12 +90,22 @@ async function getAvailableSlots(barberId, locationId, date) {
                 availableTimeSlots.push(availableSlot);
             }
 
-            else if (!lastAppointment || (lastAppointment && !((currentSlot.start_time <= lastAppointment.start_time) && (lastAppointment.end_time <= currentSlot.end_time)))
+            else if ((lastAppointment &&
+                !((currentSlot.start_time <= lastAppointment.start_time) && (lastAppointment.end_time <= currentSlot.end_time)))
                 && (currentSlot.start_time < currentAppointment.start_time)) {
                 const availableSlot = {
                     start_time: currentSlot.start_time,
                     end_time: currentAppointment.start_time,
                     type: "available2",
+                };
+                availableTimeSlots.push(availableSlot);
+            }
+
+            else if (!lastAppointment && (currentSlot.start_time < currentAppointment.start_time)) {
+                const availableSlot = {
+                    start_time: currentSlot.start_time,
+                    end_time: currentAppointment.start_time,
+                    type: "available8",
                 };
                 availableTimeSlots.push(availableSlot);
             }

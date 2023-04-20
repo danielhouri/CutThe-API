@@ -63,7 +63,23 @@ const deleteCommentById = async (req, res) => {
     }
 };
 
-module.exports = { createComment, getAllComments, getCommentById, updateCommentById, deleteCommentById, };
+const getCommentsByBarberId = async (req, res) => {
+    console.log(req)
+    try {
+        const comments = await Comment.find({ barber: req.params.id }).populate('client', 'name');
+
+        if (!comments) {
+            res.status(404).send("Comments not found for this barber");
+        } else {
+            res.send(comments);
+        }
+    } catch (err) {
+        res.status(500).send(err);
+    }
+};
+
+
+module.exports = { createComment, getAllComments, getCommentById, updateCommentById, deleteCommentById, getCommentsByBarberId };
 
 
 

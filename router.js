@@ -3,9 +3,9 @@ const { createBarber, getAllBarbers, getBarberById, updateBarber, deleteBarber, 
 const { createLocation, getAllLocations, getLocationById, updateLocation, deleteLocation, getBarberLocations } = require("./controllers/Location");
 const { createService, getAllServices, getServiceById, updateService, deleteService, getServicesByBarberId } = require("./controllers/Service");
 const { createSlot, getAllSlots, getSlotById, updateSlot, deleteSlot, getSlotsByBarberAndLocation } = require("./controllers/Slot");
-const { createAppointment, getAllAppointments, getAppointmentById, updateAppointment, deleteAppointment, cancelAppointment } = require("./controllers/Appointment");
+const { createAppointmentUser, getAllAppointments, getAppointmentById, updateAppointment, deleteAppointment, cancelAppointment } = require("./controllers/Appointment");
 const { createAboutUs, getAllAboutUs, getAboutUsById, updateAboutUsById, deleteAboutUsById } = require("./controllers/AboutUs");
-const { createComment, getAllComments, getCommentById, updateCommentById, deleteCommentById } = require("./controllers/Comment");
+const { createComment, getAllComments, getCommentById, updateCommentById, deleteCommentById, getCommentsByBarberId } = require("./controllers/Comment");
 
 const router = require("express").Router();
 
@@ -55,7 +55,7 @@ router.get("/slots/:barberId/:locationId", getSlotsByBarberAndLocation);
 // Appointment routes
 router.get("/appointments", getAllAppointments);
 router.get("/appointments/:id", getAppointmentById);
-router.post("/appointments", createAppointment);
+router.post("/appointments/user", createAppointmentUser);
 router.put("/appointments/:id", updateAppointment);
 router.delete("/appointments/:id", deleteAppointment);
 
@@ -74,6 +74,7 @@ router.get("/comments/:id", getCommentById);
 router.post("/comments", createComment);
 router.put("/comments/:id", updateCommentById);
 router.delete("/comments/:id", deleteCommentById);
+router.get("/barbers/:id/comments", getCommentsByBarberId);
 
 
 module.exports = router;

@@ -1,11 +1,43 @@
 const Appointment = require("../models/Appointment");
+const Client = require("../models/Client");
 const { tokenValidation } = require("../tools");
 
 // Create a new appointment
-const createAppointment = async (req, res) => {
+const createAppointmentUser = async (req, res) => {
+    const token = req.headers.authorization;
+
     try {
-        const appointment = new Appointment(req.body);
-        await appointment.save();
+        const decodedToken = await tokenValidation(token);
+        if (!decodedToken) {
+            res.status(401).json({ message: "Unauthorized" });
+            return;
+        }
+        const { email } = decodedToken;
+
+        const client = await Client.findOne({ email });
+        if (!client) {
+            res.status(401).json({ message: "Unauthorized" });
+            return;
+        }
+
+        const { barber, start_time, end_time, service, location } = req.body;
+        const appointment = new Appointment({
+            barber,
+            client: client._id,
+            start_time,
+            end_time,
+            service,
+            location
+        });
+
+        const savedAppointment = await appointment.save();
+
+        // Add the appointment id to the barber
+        await Client.updateOne(
+            { _id: client._id },
+            { $push: { appointments: savedAppointment._id } }
+        );
+
         res.status(201).send(appointment);
     } catch (err) {
         res.status(400).send(err);
@@ -38,7 +70,7 @@ const getAppointmentById = async (req, res) => {
             .populate('barber', 'name email profilePicture')
             .populate('client', 'name email profilePicture')
             .populate('service', 'name duration price')
-            .populate('location', 'name address')
+            .populate('location', 'name address city country')
             .exec();
 
 
@@ -137,4 +169,4 @@ const cancelAppointment = async (req, res) => {
 };
 
 
-module.exports = { createAppointment, getAllAppointments, getAppointmentById, updateAppointment, deleteAppointment, cancelAppointment };
+module.exports = { createAppointmentUser, getAllAppointments, getAppointmentById, updateAppointment, deleteAppointment, cancelAppointment };
