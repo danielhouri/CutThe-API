@@ -5,7 +5,6 @@ const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID)
 const Barber = require("../models/Barber");
 const { findClosestBarbers, tokenValidation } = require('../tools');
 
-
 const authBarber = async (req, res) => {
     const { token } = req.body;
 
@@ -57,7 +56,15 @@ const getBarberById = async (req, res) => {
     try {
         const barber = await Barber.findById(req.params.id)
             .select('name preferred_location profilePicture')
-            .populate('preferred_location', 'name');
+            .populate(
+                {
+                    path: 'preferred_location',
+                    select: 'name slots',
+                    populate: {
+                        path: 'slots',
+                        select: 'start_time end_time'
+                    }
+                });
 
         if (!barber) {
             res.status(404).send("Barber not found");
@@ -103,17 +110,16 @@ const deleteBarber = async (req, res) => {
 
 // Get the closest barber
 const getClosestBarber = async (req, res) => {
+    const token = req.headers.authorization;
+
     try {
-        const token = req.headers.authorization;
         const decodedToken = await tokenValidation(token);
 
         if (!decodedToken) {
-            console.log(decodedToken)
             res.status(401).json({ message: "Unauthorized" });
             return
         }
         const { city, country, lat, lon } = req.params;
-        console.log(req.params)
 
         // Check if any of the parameters are undefined
         if (city === undefined || country === undefined || lat === undefined || lon === undefined) {

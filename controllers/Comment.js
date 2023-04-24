@@ -64,7 +64,6 @@ const deleteCommentById = async (req, res) => {
 };
 
 const getCommentsByBarberId = async (req, res) => {
-    console.log(req)
     try {
         const comments = await Comment.find({ barber: req.params.id }).populate('client', 'name');
 

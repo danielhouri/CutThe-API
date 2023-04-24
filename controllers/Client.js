@@ -8,7 +8,6 @@ const authClient = async (req, res) => {
         const decodedToken = await tokenValidation(token);
 
         if (!decodedToken) {
-            console.log(decodedToken)
             res.status(401).json({ message: "Unauthorized" });
             return;
         }
@@ -21,8 +20,8 @@ const authClient = async (req, res) => {
             client = new Client({ name, given_name, family_name, email });
             await client.save();
         }
-        res.status(201).json(client);
 
+        res.status(201).json(client);
     } catch (err) {
         console.log(err);
         res.status(500).json({ message: "Server error" });
@@ -51,8 +50,8 @@ const getClientById = async (req, res) => {
     try {
         const token = req.headers.authorization;
         const decodedToken = await tokenValidation(token);
+
         if (!decodedToken) {
-            console.log(decodedToken)
             res.status(401).json({ message: "Unauthorized" });
             return;
         }
@@ -78,7 +77,7 @@ const getClientById = async (req, res) => {
                         model: 'Location'
                     }
                 ],
-                match: { status: 'scheduled' },
+                match: { status: false, start_time: { $gte: new Date() } },
                 options: { sort: { date: 1 } }
             })
             .exec();
@@ -89,48 +88,10 @@ const getClientById = async (req, res) => {
             res.send(client);
         }
     } catch (err) {
+        console.log(err)
         res.status(500).send(err);
     }
 };
-
-const getClientAppointments = async (req, res) => {
-    const token = req.headers.authorization;
-    try {
-        const decodedToken = await tokenValidation(token);
-        if (!decodedToken) {
-            console.log(decodedToken)
-            res.status(401).json({ message: "Unauthorized" });
-            return;
-        }
-        const { email } = decodedToken;
-
-        const client = await Client.findOne({ email: email })
-            .populate({
-                path: 'appointments',
-                populate: [
-                    {
-                        path: 'barber',
-                        model: 'Barber'
-                    },
-                    {
-                        path: 'location',
-                        model: 'Location'
-                    }
-                ],
-                options: { sort: { date: -1 } } // sort appointments by date in descending order
-            })
-            .exec();
-
-        if (!client) {
-            res.status(404).send("Client not found");
-        } else {
-            res.send(client);
-        }
-    } catch (err) {
-        res.status(500).send(err);
-    }
-};
-
 
 const updateClient = async (req, res) => {
     try {
@@ -160,5 +121,44 @@ const deleteClient = async (req, res) => {
         res.status(500).send(err);
     }
 };
+
+const getClientAppointments = async (req, res) => {
+    const token = req.headers.authorization;
+
+    try {
+        const decodedToken = await tokenValidation(token);
+        if (!decodedToken) {
+            res.status(401).json({ message: "Unauthorized" });
+            return;
+        }
+        const { email } = decodedToken;
+
+        const client = await Client.findOne({ email: email })
+            .populate({
+                path: 'appointments',
+                populate: [
+                    {
+                        path: 'barber',
+                        model: 'Barber'
+                    },
+                    {
+                        path: 'location',
+                        model: 'Location'
+                    }
+                ],
+                options: { sort: { date: -1 } }
+            })
+            .exec();
+
+        if (!client) {
+            res.status(404).send("Client not found");
+        } else {
+            res.send(client);
+        }
+    } catch (err) {
+        res.status(500).send(err);
+    }
+};
+
 
 module.exports = { createClient, getClientById, updateClient, deleteClient, authClient, getClientAppointments };

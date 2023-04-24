@@ -63,7 +63,21 @@ const deleteAboutUsById = async (req, res) => {
     }
 };
 
-module.exports = { createAboutUs, getAllAboutUs, getAboutUsById, updateAboutUsById, deleteAboutUsById, };
+const getAboutUsByBarberId = async (req, res) => {
+    const { id } = req.params;
+    try {
+        const aboutUs = await AboutUs.findOne({ barber: id });
+        if (!aboutUs) {
+            res.status(404).send({ message: "About us not found" });
+            return;
+        }
+        res.status(200).send(aboutUs);
+    } catch (err) {
+        res.status(400).send(err);
+    }
+};
+
+module.exports = { createAboutUs, getAllAboutUs, getAboutUsById, updateAboutUsById, deleteAboutUsById, getAboutUsByBarberId };
 
 
 

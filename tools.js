@@ -19,11 +19,9 @@ const tokenValidation = async (token) => {
             idToken: token,
             audience: process.env.CLIENT_ID
         });
-
         const { name, given_name, family_name, email, picture } = ticket.getPayload();
 
-        return ({ name, given_name, family_name, email, picture }); // return client data and token
-
+        return ({ name, given_name, family_name, email, picture });
     } catch (err) {
         console.log(err);
         return null;
@@ -44,6 +42,7 @@ async function getAvailableSlots(barberId, locationId) {
         barber: barberId,
         location: locationId,
         start_time: { $gte: moment.utc().startOf('day') },
+        status: "scheduled"
     });
 
     // Sort the time blocks by start time
@@ -114,7 +113,7 @@ async function getAvailableSlots(barberId, locationId) {
             lastAppointmentIndex++;
         }
 
-        if ((currentSlot.start_time <= lastAppointmentInSlot.start_time) && (lastAppointmentInSlot.end_time < currentSlot.end_time)) {
+        if (lastAppointmentInSlot && (currentSlot.start_time <= lastAppointmentInSlot.start_time) && (lastAppointmentInSlot.end_time < currentSlot.end_time)) {
             const availableSlot = {
                 start_time: lastAppointmentInSlot.end_time,
                 end_time: currentSlot.end_time,
@@ -122,7 +121,7 @@ async function getAvailableSlots(barberId, locationId) {
             };
             availableTimeSlots.push(availableSlot);
         }
-        else if (lastAppointmentInSlot.end_time < currentSlot.start_time) {
+        else if (!lastAppointmentInSlot || (lastAppointmentInSlot.end_time < currentSlot.start_time)) {
             const availableSlot = {
                 start_time: currentSlot.start_time,
                 end_time: currentSlot.end_time,
@@ -130,6 +129,7 @@ async function getAvailableSlots(barberId, locationId) {
             };
             availableTimeSlots.push(availableSlot);
         }
+
     }
 
     console.log(availableTimeSlots)

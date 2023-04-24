@@ -3,8 +3,8 @@ const { createBarber, getAllBarbers, getBarberById, updateBarber, deleteBarber, 
 const { createLocation, getAllLocations, getLocationById, updateLocation, deleteLocation, getBarberLocations } = require("./controllers/Location");
 const { createService, getAllServices, getServiceById, updateService, deleteService, getServicesByBarberId } = require("./controllers/Service");
 const { createSlot, getAllSlots, getSlotById, updateSlot, deleteSlot, getSlotsByBarberAndLocation } = require("./controllers/Slot");
-const { createAppointmentUser, getAllAppointments, getAppointmentById, updateAppointment, deleteAppointment, cancelAppointment } = require("./controllers/Appointment");
-const { createAboutUs, getAllAboutUs, getAboutUsById, updateAboutUsById, deleteAboutUsById } = require("./controllers/AboutUs");
+const { createAppointmentByClient, getAllAppointments, getAppointmentById, updateAppointment, deleteAppointment, cancelAppointment } = require("./controllers/Appointment");
+const { createAboutUs, getAllAboutUs, getAboutUsById, updateAboutUsById, deleteAboutUsById, getAboutUsByBarberId } = require("./controllers/AboutUs");
 const { createComment, getAllComments, getCommentById, updateCommentById, deleteCommentById, getCommentsByBarberId } = require("./controllers/Comment");
 
 const router = require("express").Router();
@@ -55,11 +55,11 @@ router.get("/slots/:barberId/:locationId", getSlotsByBarberAndLocation);
 // Appointment routes
 router.get("/appointments", getAllAppointments);
 router.get("/appointments/:id", getAppointmentById);
-router.post("/appointments/user", createAppointmentUser);
+router.post("/appointments/clients", createAppointmentByClient);
+router.post("/appointments/cancel/:id", cancelAppointment);
 router.put("/appointments/:id", updateAppointment);
 router.delete("/appointments/:id", deleteAppointment);
 
-router.post("/appointments/cancel/:id", cancelAppointment);
 
 // About Us routes
 router.get("/aboutus", getAllAboutUs);
@@ -67,6 +67,7 @@ router.get("/aboutus/:id", getAboutUsById);
 router.post("/aboutus", createAboutUs);
 router.put("/aboutus/:id", updateAboutUsById);
 router.delete("/aboutus/:id", deleteAboutUsById);
+router.get("/aboutus/barber/:id", getAboutUsByBarberId);
 
 // Comment routes
 router.get("/comments", getAllComments);

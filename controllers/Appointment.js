@@ -3,7 +3,7 @@ const Client = require("../models/Client");
 const { tokenValidation } = require("../tools");
 
 // Create a new appointment
-const createAppointmentUser = async (req, res) => {
+const createAppointmentByClient = async (req, res) => {
     const token = req.headers.authorization;
 
     try {
@@ -91,7 +91,6 @@ const getAppointmentById = async (req, res) => {
     }
 };
 
-
 // Update an appointment by ID
 const updateAppointment = async (req, res) => {
     try {
@@ -168,5 +167,4 @@ const cancelAppointment = async (req, res) => {
     }
 };
 
-
-module.exports = { createAppointmentUser, getAllAppointments, getAppointmentById, updateAppointment, deleteAppointment, cancelAppointment };
+module.exports = { createAppointmentByClient, getAllAppointments, getAppointmentById, updateAppointment, deleteAppointment, cancelAppointment };

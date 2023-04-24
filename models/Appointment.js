@@ -29,17 +29,10 @@ const AppointmentSchema = new mongoose.Schema({
         required: true
     },
     status: {
-        type: String,
-        enum: ['scheduled', 'cancelled', 'completed'],
-        default: 'scheduled'
+        type: Boolean,
+        default: false,
     }
 });
 
-AppointmentSchema.pre('save', function (next) {
-    if (this.status === 'scheduled' && this.start_time < new Date()) {
-        this.status = 'completed';
-    }
-    next();
-});
 
 module.exports = mongoose.model('Appointment', AppointmentSchema);

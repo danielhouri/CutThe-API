@@ -13,6 +13,10 @@ const BarberSchema = new mongoose.Schema({
     profilePicture: {
         type: String
     },
+    phone_number: {
+        type: String,
+        required: true,
+    },
     aboutUs: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'AboutUs'

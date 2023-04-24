@@ -3,7 +3,8 @@ const mongoose = require("mongoose");
 const commentSchema = new mongoose.Schema({
     client: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Client', required: true
+        ref: 'Client',
+        required: true
     },
     barber: {
         type: mongoose.Schema.Types.ObjectId,
@@ -25,8 +26,7 @@ const commentSchema = new mongoose.Schema({
     text: {
         type: String,
         required: true
-    },
-    pictures: [{ type: String }]
+    }
 });
 
 module.exports = mongoose.model('Comment', commentSchema);
