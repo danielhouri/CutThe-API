@@ -27,6 +27,7 @@ router.post("/barbers", createBarber);
 router.put("/barbers/:id", updateBarber);
 router.delete("/barbers/:id", deleteBarber);
 router.get("/barbers/closest/:city/:country/:lat/:lon", getClosestBarber);
+router.get("/barbers/search/:city/:country/:lat/:lon/:store/:home/:cash/:credit", getClosestBarber);
 
 // Location routes
 router.get("/locations", getAllLocations);
