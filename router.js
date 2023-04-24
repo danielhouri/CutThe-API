@@ -60,7 +60,6 @@ router.post("/appointments/cancel/:id", cancelAppointment);
 router.put("/appointments/:id", updateAppointment);
 router.delete("/appointments/:id", deleteAppointment);
 
-
 // About Us routes
 router.get("/aboutus", getAllAboutUs);
 router.get("/aboutus/:id", getAboutUsById);

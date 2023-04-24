@@ -158,7 +158,7 @@ const cancelAppointment = async (req, res) => {
             return;
         }
 
-        appointment.status = "cancelled";
+        appointment.status = true;
 
         await appointment.save();
         res.send(appointment);

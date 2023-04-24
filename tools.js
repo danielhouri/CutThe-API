@@ -29,7 +29,6 @@ const tokenValidation = async (token) => {
 };
 
 async function getAvailableSlots(barberId, locationId) {
-
     // Find all slots for the given barber, location, and date
     const slots = await Slot.find({
         barber: barberId,
@@ -42,7 +41,7 @@ async function getAvailableSlots(barberId, locationId) {
         barber: barberId,
         location: locationId,
         start_time: { $gte: moment.utc().startOf('day') },
-        status: "scheduled"
+        status: false
     });
 
     // Sort the time blocks by start time
