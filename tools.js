@@ -196,4 +196,80 @@ async function removeExpiredSlots() {
     }
 }
 
-module.exports = { tokenValidation, getAvailableSlots, removeExpiredSlots, findClosestBarbers };
+async function searchBarber(city, country, lat, lon, store, home, cash, credit) {
+    const locations = await Location.find({ city, country }).select('name address city barber coordinates').populate({
+        path: 'barber',
+        select: 'name profilePicture pay_barber_cash pay_barber_credit_card aboutUs',
+        populate: {
+            path: 'aboutUs',
+            select: 'pictures'
+        }
+    });
+
+    const filteredBarbers = locations.filter((location) => {
+        let isMatch = true;
+        // if (store === "true" && !barber.store) {
+        //     isMatch = false;
+        // }
+
+        // if (home === "true" && !barber.home) {
+        //     isMatch = false;
+        // }
+
+        if (cash === "true" && !location.barber.pay_barber_cash) {
+            isMatch = false;
+        }
+
+        if (credit === "true" && !location.barber.pay_barber_credit_card) {
+            isMatch = false;
+        }
+
+        return isMatch;
+    });
+
+    const barbersWithDistanceAndRating = filteredBarbers.map(async (location) => {
+        const barber = location.barber;
+        const comments = await Comment.find({ barber: barber._id });
+        const avgRating = comments.reduce((acc, comment) => acc + comment.rating, 0) / comments.length;
+
+        const distanceInMeters = geolib.getDistance(
+            { latitude: lat, longitude: lon },
+            { latitude: location.coordinates.coordinates[0], longitude: location.coordinates.coordinates[1] }
+        );
+
+        if (barber.aboutUs.pictures.length > 0) {
+            return {
+                location: {
+                    name: location.name,
+                    address: location.address,
+                    city: location.city
+                },
+                barber: {
+                    ...barber.toObject(),
+                    aboutUs: {
+                        pictures: barber.aboutUs.pictures[0]
+                    }
+                },
+                distance: distanceInMeters / 1000,
+                avgRating,
+            };
+        }
+        return {
+            location: {
+                name: location.name,
+                address: location.address,
+                city: location.city
+            },
+            barber,
+            distance: distanceInMeters / 1000,
+            avgRating,
+        };
+    });
+
+    const results = await Promise.all(barbersWithDistanceAndRating);
+    console.log(results)
+
+    return results;
+}
+
+module.exports = { tokenValidation, getAvailableSlots, removeExpiredSlots, findClosestBarbers, searchBarber };

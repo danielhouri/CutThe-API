@@ -3,7 +3,7 @@ require("dotenv").config({ path: "./tools.env" });
 const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID)
 
 const Barber = require("../models/Barber");
-const { findClosestBarbers, tokenValidation } = require('../tools');
+const { findClosestBarbers, tokenValidation, searchBarber } = require('../tools');
 
 const authBarber = async (req, res) => {
     const { token } = req.body;
@@ -139,4 +139,17 @@ const getClosestBarber = async (req, res) => {
     }
 };
 
-module.exports = { createBarber, getAllBarbers, getBarberById, updateBarber, deleteBarber, authBarber, getClosestBarber };
+
+const getBarberBySearch = async (req, res) => {
+    try {
+        const { city, country, lat, lon, store, home, cash, credit } = req.params;
+        const barberList = await searchBarber(city, country, lat, lon, store, home, cash, credit);
+        res.status(200).json(barberList);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: "Internal server error" });
+    }
+};
+
+
+module.exports = { createBarber, getAllBarbers, getBarberById, updateBarber, deleteBarber, authBarber, getClosestBarber, getBarberBySearch };
