@@ -16,7 +16,6 @@ const authBarber = async (req, res) => {
         });
 
         const { name, email, picture } = ticket.getPayload();
-        console.log({ name, email, picture });
 
         const barber = await Barber.findOne({ email }); // find barber in database by email
         if (!barber) { // if barber not found

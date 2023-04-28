@@ -267,8 +267,6 @@ async function searchBarber(city, country, lat, lon, store, home, cash, credit) 
     });
 
     const results = await Promise.all(barbersWithDistanceAndRating);
-    console.log(results)
-
     return results;
 }
 
