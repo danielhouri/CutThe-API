@@ -21,7 +21,8 @@ const AppointmentSchema = new mongoose.Schema({
     },
     service: [{
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Service', required: true
+        ref: 'Service',
+        required: true
     }],
     location: {
         type: mongoose.Schema.Types.ObjectId,
@@ -31,7 +32,11 @@ const AppointmentSchema = new mongoose.Schema({
     status: {
         type: Boolean,
         default: false,
-    }
+    },
+    product: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Product',
+    }]
 });
 
 

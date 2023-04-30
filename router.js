@@ -5,7 +5,8 @@ const { createService, getAllServices, getServiceById, updateService, deleteServ
 const { createSlot, getAllSlots, getSlotById, updateSlot, deleteSlot, getSlotsByBarberAndLocation } = require("./controllers/Slot");
 const { createAppointmentByClient, getAllAppointments, getAppointmentById, updateAppointment, deleteAppointment, cancelAppointment } = require("./controllers/Appointment");
 const { createAboutUs, getAllAboutUs, getAboutUsById, updateAboutUsById, deleteAboutUsById, getAboutUsByBarberId } = require("./controllers/AboutUs");
-const { createComment, getAllComments, getCommentById, updateCommentById, deleteCommentById, getCommentsByBarberId } = require("./controllers/Comment");
+const { createComment, getAllComments, getCommentById, updateCommentById, deleteCommentById, getCommentsByBarberId, createCommentByClient } = require("./controllers/Comment");
+const { createProduct, getAllProducts, getProductById, updateProduct, deleteProduct, getProductsByBarberId } = require("./controllers/Product");
 
 const router = require("express").Router();
 
@@ -76,6 +77,14 @@ router.post("/comments", createComment);
 router.put("/comments/:id", updateCommentById);
 router.delete("/comments/:id", deleteCommentById);
 router.get("/barbers/:id/comments", getCommentsByBarberId);
+router.post("/comments/clients", createCommentByClient);
 
+// Product routes
+router.get("/products", getAllProducts);
+router.get("/products/:id", getProductById);
+router.post("/products", createProduct);
+router.put("/products/:id", updateProduct);
+router.delete("/products/:id", deleteProduct);
+router.get('/products/barber/:barberId', getProductsByBarberId);
 
 module.exports = router;

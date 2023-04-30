@@ -1,4 +1,5 @@
 const Comment = require("../models/Comment");
+const Client = require("../models/Client");
 
 // Create a new Comment
 const createComment = async (req, res) => {
@@ -77,8 +78,41 @@ const getCommentsByBarberId = async (req, res) => {
     }
 };
 
+// Create a new Comment
+const createCommentByClient = async (req, res) => {
+    try {
+        const decodedToken = await tokenValidation(token);
+        if (!decodedToken) {
+            res.status(401).json({ message: "Unauthorized" });
+            return;
+        }
+        const { email } = decodedToken;
 
-module.exports = { createComment, getAllComments, getCommentById, updateCommentById, deleteCommentById, getCommentsByBarberId };
+        const client = await Client.findOne({ email });
+        if (!client) {
+            res.status(401).json({ message: "Unauthorized" });
+            return;
+        }
+
+        const { barber, rating, text } = req.body;
+
+        const comment = new Comment({
+            barber,
+            client: client._id,
+            date: new Date(),
+            rating,
+            text
+        })
+
+        await comment.save();
+        res.status(201).send(comment);
+    } catch (err) {
+        res.status(400).send(err);
+    }
+};
+
+
+module.exports = { createComment, getAllComments, getCommentById, updateCommentById, deleteCommentById, getCommentsByBarberId, createCommentByClient };
 
 
 
