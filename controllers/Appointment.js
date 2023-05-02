@@ -20,14 +20,15 @@ const createAppointmentByClient = async (req, res) => {
             return;
         }
 
-        const { barber, start_time, end_time, service, location } = req.body;
+        const { barber, start_time, end_time, service, location, ordered_products } = req.body;
         const appointment = new Appointment({
             barber,
             client: client._id,
             start_time,
             end_time,
             service,
-            location
+            location,
+            ordered_products
         });
 
         const savedAppointment = await appointment.save();
@@ -71,6 +72,14 @@ const getAppointmentById = async (req, res) => {
             .populate('client', 'name email profilePicture')
             .populate('service', 'name duration price')
             .populate('location', 'name address city country')
+            .populate({
+                path: 'ordered_products',
+                populate: {
+                    path: 'product',
+                    model: 'Product',
+                    select: 'title description price image quantity'
+                }
+            })
             .exec();
 
 

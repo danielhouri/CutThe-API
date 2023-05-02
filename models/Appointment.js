@@ -33,9 +33,16 @@ const AppointmentSchema = new mongoose.Schema({
         type: Boolean,
         default: false,
     },
-    product: [{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Product',
+    ordered_products: [{
+        product: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Product',
+            required: true
+        },
+        quantity: {
+            type: Number,
+            required: true
+        }
     }]
 });
 

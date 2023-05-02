@@ -66,7 +66,17 @@ const deleteAboutUsById = async (req, res) => {
 const getAboutUsByBarberId = async (req, res) => {
     const { id } = req.params;
     try {
-        const aboutUs = await AboutUs.findOne({ barber: id });
+        const aboutUs = await AboutUs.findOne({ barber: id })
+            .populate({
+                path: 'barber',
+                select: 'preferred_location phone_number slots',
+                populate: {
+                    path: 'preferred_location',
+                    select: 'address city country'
+                }
+            });
+        console.log(aboutUs)
+
         if (!aboutUs) {
             res.status(404).send({ message: "About us not found" });
             return;
@@ -76,6 +86,7 @@ const getAboutUsByBarberId = async (req, res) => {
         res.status(400).send(err);
     }
 };
+
 
 module.exports = { createAboutUs, getAllAboutUs, getAboutUsById, updateAboutUsById, deleteAboutUsById, getAboutUsByBarberId };
 

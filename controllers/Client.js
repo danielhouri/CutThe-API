@@ -146,10 +146,10 @@ const getClientAppointments = async (req, res) => {
                         model: 'Location'
                     }
                 ],
-                options: { sort: { date: -1 } }
+                options: { sort: { start_time: -1 } }
             })
             .exec();
-
+        console.log(client)
         if (!client) {
             res.status(404).send("Client not found");
         } else {

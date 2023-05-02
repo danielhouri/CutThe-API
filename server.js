@@ -26,10 +26,6 @@ mongoose
         console.log(err);
     });
 
-
-// Call the function once a day (every 24 hours) to remove expired slots
-// setInterval(removeExpiredSlots, 24 * 60 * 60 * 1000);
-
 // Start the server and listen on a specific port
 app.listen(3000, () => {
     console.log('Server is listening on port 3000');

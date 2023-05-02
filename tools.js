@@ -181,21 +181,6 @@ async function findClosestBarbers(city, country, coordinates) {
     return results;
 }
 
-async function removeExpiredSlots() {
-    console.log('Remove expired slots');
-
-    const expiredSlots = await Slot.find({ end_time: { $lt: new Date() } });
-    for (let i = 0; i < expiredSlots.length; i++) {
-        const slot = expiredSlots[i];
-
-        // Remove the slot from the location's slots array
-        await Location.findByIdAndUpdate(slot.location, { $pull: { slots: slot._id } });
-
-        // Remove the slot from the database
-        await Slot.findByIdAndRemove(slot._id);
-    }
-}
-
 async function searchBarber(city, country, lat, lon, store, home, cash, credit) {
     const locations = await Location.find({ city, country }).select('name address city barber coordinates').populate({
         path: 'barber',
@@ -270,4 +255,4 @@ async function searchBarber(city, country, lat, lon, store, home, cash, credit) 
     return results;
 }
 
-module.exports = { tokenValidation, getAvailableSlots, removeExpiredSlots, findClosestBarbers, searchBarber };
+module.exports = { tokenValidation, getAvailableSlots, findClosestBarbers, searchBarber };
