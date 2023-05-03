@@ -1,5 +1,6 @@
 const Comment = require("../models/Comment");
 const Client = require("../models/Client");
+const { tokenValidation } = require("../tools");
 
 // Create a new Comment
 const createComment = async (req, res) => {
@@ -81,7 +82,9 @@ const getCommentsByBarberId = async (req, res) => {
 // Create a new Comment
 const createCommentByClient = async (req, res) => {
     try {
+        const token = req.headers.authorization;
         const decodedToken = await tokenValidation(token);
+
         if (!decodedToken) {
             res.status(401).json({ message: "Unauthorized" });
             return;
@@ -93,13 +96,13 @@ const createCommentByClient = async (req, res) => {
             res.status(401).json({ message: "Unauthorized" });
             return;
         }
-
-        const { barber, rating, text } = req.body;
+        console.log(req.body)
+        const { barber, rating, date, text } = req.body;
 
         const comment = new Comment({
             barber,
             client: client._id,
-            date: new Date(),
+            date,
             rating,
             text
         })
@@ -107,6 +110,7 @@ const createCommentByClient = async (req, res) => {
         await comment.save();
         res.status(201).send(comment);
     } catch (err) {
+        console.log(err)
         res.status(400).send(err);
     }
 };
