@@ -1,4 +1,6 @@
 const Client = require("../models/Client");
+const Barber = require("../models/Barber");
+
 const { tokenValidation } = require("../tools");
 
 const authClient = async (req, res) => {
@@ -186,6 +188,38 @@ const updateClientProfilePicture = async (req, res) => {
     }
 };
 
+const updateClientPreferredBarber = async (req, res) => {
+    try {
+        const token = req.headers.authorization;
+        const decodedToken = await tokenValidation(token);
+        if (!decodedToken) {
+            res.status(401).json({ message: "Unauthorized" });
+            return;
+        }
+        const { email } = decodedToken;
+        const client = await Client.findOne({ email });
+        if (!client) {
+            res.status(400).json({ message: "Client not found" });
+            return;
+        }
+
+        const { barberId } = req.body;
+
+        const barber = await Barber.findById(barberId);
+        if (!barber) {
+            res.status(400).json({ message: "Barber not found" });
+            return;
+        }
+
+        client.preferred_barber = barberId;
+        await client.save();
+
+        res.status(200).json({ message: "Preferred barber updated successfully" });
+    } catch (err) {
+        console.log(err);
+        res.status(500).send(err);
+    }
+};
 
 
-module.exports = { createClient, getClientById, updateClient, deleteClient, authClient, getClientAppointments, updateClientProfilePicture };
+module.exports = { createClient, getClientById, updateClient, deleteClient, authClient, getClientAppointments, updateClientProfilePicture, updateClientPreferredBarber };
