@@ -149,7 +149,7 @@ const getClientAppointments = async (req, res) => {
                 options: { sort: { start_time: -1 } }
             })
             .exec();
-        console.log(client)
+
         if (!client) {
             res.status(404).send("Client not found");
         } else {
@@ -160,5 +160,32 @@ const getClientAppointments = async (req, res) => {
     }
 };
 
+const updateClientProfilePicture = async (req, res) => {
+    try {
+        const token = req.headers.authorization;
+        const decodedToken = await tokenValidation(token);
+        if (!decodedToken) {
+            res.status(401).json({ message: "Unauthorized" });
+            return;
+        }
+        const { email } = decodedToken;
+        const client = await Client.findOne({ email });
+        if (!client) {
+            res.status(400).json({ message: "Client not found" });
+            return;
+        }
 
-module.exports = { createClient, getClientById, updateClient, deleteClient, authClient, getClientAppointments };
+        const { profilePicture } = req.body
+        client.profilePicture = profilePicture;
+        await client.save();
+
+        res.status(200).json({ message: "Profile picture updated successfully" });
+    } catch (err) {
+        console.log(err)
+        res.status(500).send(err);
+    }
+};
+
+
+
+module.exports = { createClient, getClientById, updateClient, deleteClient, authClient, getClientAppointments, updateClientProfilePicture };

@@ -75,7 +75,6 @@ const getAboutUsByBarberId = async (req, res) => {
                     select: 'address city country'
                 }
             });
-        console.log(aboutUs)
 
         if (!aboutUs) {
             res.status(404).send({ message: "About us not found" });

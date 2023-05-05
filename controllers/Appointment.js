@@ -20,7 +20,7 @@ const createAppointmentByClient = async (req, res) => {
             return;
         }
 
-        const { barber, start_time, end_time, service, location, ordered_products } = req.body;
+        const { barber, start_time, end_time, service, location, ordered_products, price } = req.body;
         const appointment = new Appointment({
             barber,
             client: client._id,
@@ -28,7 +28,8 @@ const createAppointmentByClient = async (req, res) => {
             end_time,
             service,
             location,
-            ordered_products
+            ordered_products,
+            price
         });
 
         const savedAppointment = await appointment.save();

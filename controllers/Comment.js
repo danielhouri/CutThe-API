@@ -96,7 +96,7 @@ const createCommentByClient = async (req, res) => {
             res.status(401).json({ message: "Unauthorized" });
             return;
         }
-        console.log(req.body)
+
         const { barber, rating, date, text } = req.body;
 
         const comment = new Comment({

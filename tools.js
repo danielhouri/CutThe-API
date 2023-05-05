@@ -33,16 +33,17 @@ async function getAvailableSlots(barberId, locationId) {
     const slots = await Slot.find({
         barber: barberId,
         location: locationId,
-        start_time: { $gte: moment.utc().startOf('day') },
+        start_time: { $gte: moment().utc().startOf('day') },
     });
 
     // Find all appointments for the given barber, location, and date
     const appointments = await Appointment.find({
         barber: barberId,
         location: locationId,
-        start_time: { $gte: moment.utc().startOf('day') },
+        start_time: { $gte: moment().utc().startOf('day') },
         status: false
     });
+    console.log(appointments)
 
     // Sort the time blocks by start time
     slots.sort((a, b) => a.start_time - b.start_time);
@@ -131,7 +132,7 @@ async function getAvailableSlots(barberId, locationId) {
 
     }
 
-    console.log(availableTimeSlots)
+    //console.log(availableTimeSlots)
     return availableTimeSlots;
 }
 
