@@ -77,6 +77,7 @@ const getServicesByBarberId = async (req, res) => {
         const services = await Service.find({ barber: barberId });
         res.send(services);
     } catch (err) {
+        console.log(err)
         res.status(500).send(err);
     }
 };
