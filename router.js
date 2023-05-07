@@ -7,6 +7,7 @@ const { createAppointmentByClient, getAllAppointments, getAppointmentById, updat
 const { createAboutUs, getAllAboutUs, getAboutUsById, updateAboutUsById, deleteAboutUsById, getAboutUsByBarberId } = require("./controllers/AboutUs");
 const { createComment, getAllComments, getCommentById, updateCommentById, deleteCommentById, getCommentsByBarberId, createCommentByClient } = require("./controllers/Comment");
 const { createProduct, getAllProducts, getProductById, updateProduct, deleteProduct, getProductsByBarberId } = require("./controllers/Product");
+const { createWaitlistByClient, createWaitlistEntry, getAllWaitlistEntries, getWaitlistEntryById, updateWaitlistEntry, deleteWaitlistEntry } = require("./controllers/Watchlist");
 
 const router = require("express").Router();
 
@@ -88,5 +89,8 @@ router.post("/products", createProduct);
 router.put("/products/:id", updateProduct);
 router.delete("/products/:id", deleteProduct);
 router.get('/products/barber/:barberId', getProductsByBarberId);
+
+// WatchList routes
+router.post("/Watchlist", createWaitlistByClient);
 
 module.exports = router;

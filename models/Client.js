@@ -28,6 +28,9 @@ const ClientSchema = new mongoose.Schema({
     appointments: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Appointment'
+    }],
+    stylePictures: [{
+        type: String,
     }]
 });
 

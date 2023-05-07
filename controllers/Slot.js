@@ -82,5 +82,4 @@ const getSlotsByBarberAndLocation = async (req, res) => {
     }
 };
 
-
 module.exports = { createSlot, getAllSlots, getSlotById, updateSlot, deleteSlot, getSlotsByBarberAndLocation };
