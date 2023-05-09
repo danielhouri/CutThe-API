@@ -242,6 +242,7 @@ async function searchBarber(city, country, lat, lon, store, home, cash, credit) 
         return isMatch;
     });
 
+
     const barbersWithDistanceAndRating = filteredBarbers.map(async (location) => {
         const barber = location.barber;
         const comments = await Comment.find({ barber: barber._id });
