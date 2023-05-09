@@ -221,5 +221,95 @@ const updateClientPreferredBarber = async (req, res) => {
     }
 };
 
+const addStylePicture = async (req, res) => {
+    try {
+        const token = req.headers.authorization;
+        const decodedToken = await tokenValidation(token);
+        if (!decodedToken) {
+            res.status(401).json({ message: "Unauthorized" });
+            return;
+        }
 
-module.exports = { createClient, getClientById, updateClient, deleteClient, authClient, getClientAppointments, updateClientProfilePicture, updateClientPreferredBarber };
+        const { email } = decodedToken;
+        const client = await Client.findOne({ email });
+        if (!client) {
+            res.status(400).json({ message: "Client not found" });
+            return;
+        }
+
+        const { pictureUrl } = req.body;
+
+        if (!pictureUrl) {
+            res.status(400).json({ message: "Missing pictureUrl" });
+            return;
+        }
+
+        client.stylePictures.push(pictureUrl);
+        console.log(pictureUrl)
+
+        await client.save();
+        res.status(200).json({ message: "Style picture added successfully" });
+    } catch (err) {
+        console.log(err);
+        res.status(500).send(err);
+    }
+};
+
+const getStylePictures = async (req, res) => {
+    try {
+        const token = req.headers.authorization;
+        const decodedToken = await tokenValidation(token);
+        if (!decodedToken) {
+            res.status(401).json({ message: "Unauthorized" });
+            return;
+        }
+
+        const { email } = decodedToken;
+        const client = await Client.findOne({ email });
+        if (!client) {
+            res.status(400).json({ message: "Client not found" });
+            return;
+        }
+
+        const stylePictures = client.stylePictures;
+        console.log(stylePictures)
+
+        res.status(200).json({ stylePictures });
+    } catch (err) {
+        console.log(err);
+        res.status(500).send(err);
+    }
+}
+
+const removeStylePicture = async (req, res) => {
+    try {
+        const token = req.headers.authorization;
+        const decodedToken = await tokenValidation(token);
+        if (!decodedToken) {
+            res.status(401).json({ message: "Unauthorized" });
+            return;
+        }
+
+        const { email } = decodedToken;
+        const client = await Client.findOne({ email });
+        if (!client) {
+            res.status(400).json({ message: "Client not found" });
+            return;
+        }
+
+        const { pictureUrl } = req.body;
+        const index = client.stylePictures.indexOf(pictureUrl);
+        if (index !== -1) {
+            client.stylePictures.splice(index, 1);
+        }
+
+        await client.save();
+
+        res.status(200).json({ stylePictures: client.stylePictures });
+    } catch (err) {
+        console.log(err);
+        res.status(500).send(err);
+    }
+}
+
+module.exports = { removeStylePicture, getStylePictures, addStylePicture, createClient, getClientById, updateClient, deleteClient, authClient, getClientAppointments, updateClientProfilePicture, updateClientPreferredBarber };

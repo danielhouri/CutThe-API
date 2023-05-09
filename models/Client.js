@@ -31,6 +31,7 @@ const ClientSchema = new mongoose.Schema({
     }],
     stylePictures: [{
         type: String,
+        default: []
     }]
 });
 
