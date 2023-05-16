@@ -30,24 +30,6 @@ const authClient = async (req, res) => {
     }
 };
 
-const createClient = async (req, res) => {
-    try {
-        const client = new Client({
-            name: req.body.name,
-            email: req.body.email,
-            given_name: req.body.given_name,
-            family_name: req.body.family_name,
-            profilePicture: req.body.profilePicture,
-            preferred_barbers: [],
-            appointments: []
-        });
-        await client.save();
-        res.status(201).send(client);
-    } catch (err) {
-        res.status(400).send(err);
-    }
-};
-
 const getClientById = async (req, res) => {
     try {
         const token = req.headers.authorization;
@@ -365,4 +347,4 @@ const getClientInfo = async (req, res) => {
 };
 
 
-module.exports = { getClientInfo, removeStylePicture, getStylePictures, addStylePicture, createClient, getClientById, updateClient, deleteClient, authClient, getClientAppointments, updateClientProfilePicture, updateClientPreferredBarber };
+module.exports = { getClientInfo, removeStylePicture, getStylePictures, addStylePicture, getClientById, updateClient, deleteClient, authClient, getClientAppointments, updateClientProfilePicture, updateClientPreferredBarber };

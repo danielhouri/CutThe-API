@@ -3,6 +3,8 @@ require("dotenv").config({ path: "./tools.env" });
 const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID)
 
 const Barber = require("../models/Barber");
+const Client = require("../models/Client");
+
 const { findClosestBarbers, tokenValidation, searchBarber } = require('../tools');
 
 const authBarber = async (req, res) => {
@@ -212,5 +214,48 @@ const removeClientFromBarber = async (req, res) => {
     }
 };
 
+const AddClientToBarber = async (req, res) => {
+    console.log(req)
+    try {
+        const token = req.headers.authorization;
+        const decodedToken = await tokenValidation(token);
 
-module.exports = { removeClientFromBarber, removeClientFromBarber, getBarberClients, createBarber, getAllBarbers, getBarberById, updateBarber, deleteBarber, authBarber, getClosestBarber, getBarberBySearch };
+        if (!decodedToken) {
+            res.status(401).json({ message: "Unauthorized" });
+            return;
+        }
+        const { email } = decodedToken;
+
+        const barber = await Barber.findOne({ email });
+        if (!barber) {
+            res.status(401).json({ message: "Unauthorized" });
+            return;
+        }
+
+        const clientExists = await Client.findOne({ email: req.body.email });
+
+        if (clientExists) {
+            barber.clients.push(clientExists);
+            await barber.save();
+            res.status(201).json(clientExists);
+        } else {
+            // Create a new client
+            const client = new Client({
+                name: req.body.given_name + ' ' + req.body.family_name,
+                email: req.body.email,
+                given_name: req.body.given_name,
+                family_name: req.body.family_name,
+            });
+            await client.save();
+
+            barber.clients.push(client);
+            await barber.save();
+
+            res.status(201).json(client);
+        }
+    } catch (err) {
+        res.status(400).send(err);
+    }
+};
+
+module.exports = { AddClientToBarber, removeClientFromBarber, removeClientFromBarber, getBarberClients, createBarber, getAllBarbers, getBarberById, updateBarber, deleteBarber, authBarber, getClosestBarber, getBarberBySearch };
