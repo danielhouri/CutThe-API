@@ -36,7 +36,13 @@ const BarberSchema = new mongoose.Schema({
     pay_barber_credit_card: {
         type: Boolean,
         default: true
-    }
+    },
+    clients: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Client',
+        required: true,
+        default: []
+    }]
 });
 
 module.exports = mongoose.model("Barber", BarberSchema);

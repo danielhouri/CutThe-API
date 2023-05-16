@@ -312,4 +312,57 @@ const removeStylePicture = async (req, res) => {
     }
 }
 
-module.exports = { removeStylePicture, getStylePictures, addStylePicture, createClient, getClientById, updateClient, deleteClient, authClient, getClientAppointments, updateClientProfilePicture, updateClientPreferredBarber };
+const getClientInfo = async (req, res) => {
+
+    try {
+        const token = req.headers.authorization;
+        const decodedToken = await tokenValidation(token);
+        if (!decodedToken) {
+            res.status(401).json({ message: "Unauthorized" });
+            return;
+        }
+        const { email } = decodedToken;
+
+        const barber = await Barber.findOne({ email });
+        if (!barber) {
+            res.status(400).json({ message: "Client not found" });
+            return;
+        }
+
+        const clientId = req.params.id;
+
+        const client = await Client.findById(clientId)
+            .select('name profilePicture email')
+            .populate({
+                path: 'appointments',
+                match: { barber: barber._id },
+                select: 'start_time status',
+                populate: {
+                    path: 'location',
+                    model: 'Location',
+                    select: 'name'
+                }
+            })
+            .exec();
+
+        if (!client) {
+            res.status(400).json({ message: "Client not found" });
+            return;
+        }
+
+        const new_client = {
+            name: client.name,
+            profilePicture: client.profilePicture,
+            email: client.email,
+            appointments: client.appointments
+        };
+
+        res.status(200).json(new_client);
+    } catch (error) {
+        console.log(err);
+        res.status(500).send(err);
+    }
+};
+
+
+module.exports = { getClientInfo, removeStylePicture, getStylePictures, addStylePicture, createClient, getClientById, updateClient, deleteClient, authClient, getClientAppointments, updateClientProfilePicture, updateClientPreferredBarber };

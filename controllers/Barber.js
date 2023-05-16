@@ -6,23 +6,23 @@ const Barber = require("../models/Barber");
 const { findClosestBarbers, tokenValidation, searchBarber } = require('../tools');
 
 const authBarber = async (req, res) => {
-    const { token } = req.body;
-
     try {
+        const token = req.headers.authorization;
+
         // verify token using Google API
         const ticket = await googleClient.verifyIdToken({
             idToken: token,
             audience: process.env.CLIENT_ID
         });
 
-        const { name, email, picture } = ticket.getPayload();
+        const { email } = ticket.getPayload();
 
         const barber = await Barber.findOne({ email }); // find barber in database by email
         if (!barber) { // if barber not found
             return res.status(401).json({ message: "Unauthorized" }); // return unauthorized status
         }
-        res.status(201).json({ barber, token }); // return barber data and token
 
+        res.status(201).json({ barber, token }); // return barber data and token
     } catch (err) {
         console.log(err);
         res.status(500).json({ message: "Server error" });
@@ -151,4 +151,66 @@ const getBarberBySearch = async (req, res) => {
 };
 
 
-module.exports = { createBarber, getAllBarbers, getBarberById, updateBarber, deleteBarber, authBarber, getClosestBarber, getBarberBySearch };
+const getBarberClients = async (req, res) => {
+
+
+    try {
+        const token = req.headers.authorization;
+        const decodedToken = await tokenValidation(token);
+        if (!decodedToken) {
+            res.status(401).json({ message: "Unauthorized" });
+            return;
+        }
+        const { email } = decodedToken;
+
+        const barber = await Barber.findOne({ email }).populate({
+            path: 'clients',
+            select: 'name profilePicture email'
+        });
+
+        if (!barber) {
+            res.status(401).json({ message: "Unauthorized" });
+            return;
+        }
+
+        const clients = barber.clients;
+        res.send(clients);
+    } catch (err) {
+        console.log(err)
+        res.status(500).send(err);
+    }
+};
+
+const removeClientFromBarber = async (req, res) => {
+    try {
+        const token = req.headers.authorization;
+        const decodedToken = await tokenValidation(token);
+
+        if (!decodedToken) {
+            res.status(401).json({ message: "Unauthorized" });
+            return;
+        }
+        const { email } = decodedToken;
+
+        const userId = req.params.id;
+        // Perform token validation if required
+        const barber = await Barber.findOneAndUpdate(
+            { email: email }, // Assuming email is used to identify the barber
+            { $pull: { clients: userId } },
+            { new: true }
+        );
+
+        if (!barber) {
+            res.status(404).json({ message: 'Barber not found' });
+            return;
+        }
+
+        res.status(200).json({ message: 'Client removed successfully', barber });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ message: 'Error removing client', error });
+    }
+};
+
+
+module.exports = { removeClientFromBarber, removeClientFromBarber, getBarberClients, createBarber, getAllBarbers, getBarberById, updateBarber, deleteBarber, authBarber, getClosestBarber, getBarberBySearch };

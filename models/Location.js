@@ -28,10 +28,6 @@ const LocationSchema = new mongoose.Schema({
             required: true
         }
     },
-    services: [{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Service'
-    }],
     slots: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Slot'
