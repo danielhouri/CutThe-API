@@ -154,8 +154,6 @@ const getBarberBySearch = async (req, res) => {
 
 
 const getBarberClients = async (req, res) => {
-
-
     try {
         const token = req.headers.authorization;
         const decodedToken = await tokenValidation(token);
@@ -215,7 +213,6 @@ const removeClientFromBarber = async (req, res) => {
 };
 
 const AddClientToBarber = async (req, res) => {
-    console.log(req)
     try {
         const token = req.headers.authorization;
         const decodedToken = await tokenValidation(token);

@@ -4,7 +4,7 @@ const { createLocation, getAllLocations, getLocationById, updateLocation, delete
 const { createService, getAllServices, getServiceById, updateService, deleteService, getServicesByBarberId } = require("./controllers/Service");
 const { createSlot, getAllSlots, getSlotById, updateSlot, deleteSlot, getSlotsByBarberAndLocation } = require("./controllers/Slot");
 const { updateAppointmentTime, createAppointmentByBarber, getBarberAppointmentsByMonth, createAppointmentByClient, getAppointmentById, updateAppointment, deleteAppointment, cancelAppointment } = require("./controllers/Appointment");
-const { createAboutUs, getAllAboutUs, getAboutUsById, updateAboutUsById, deleteAboutUsById, getAboutUsByBarberId } = require("./controllers/AboutUs");
+const { deleteAboutUsImage, updateAboutUsText, updateAboutUsImageList, createAboutUs, getAllAboutUs, getAboutUsById, updateAboutUsById, getAboutUsByBarberId } = require("./controllers/AboutUs");
 const { createComment, getAllComments, getCommentById, updateCommentById, deleteCommentById, getCommentsByBarberId, createCommentByClient } = require("./controllers/Comment");
 const { createProduct, getAllProducts, getProductById, updateProduct, deleteProduct, getProductsByBarberId } = require("./controllers/Product");
 const { createWaitlistByClient } = require("./controllers/Watchlist");
@@ -74,12 +74,13 @@ router.post("/appointments/barber/create", createAppointmentByBarber);
 router.post("/appointments/barber/update/time", updateAppointmentTime);
 
 // About Us routes
-router.get("/aboutus", getAllAboutUs);
-router.get("/aboutus/:id", getAboutUsById);
+router.get("/aboutus", getAboutUsById);
 router.post("/aboutus", createAboutUs);
 router.put("/aboutus/:id", updateAboutUsById);
-router.delete("/aboutus/:id", deleteAboutUsById);
 router.get("/aboutus/barber/:id", getAboutUsByBarberId);
+router.post("/aboutus/AddPicture", updateAboutUsImageList);
+router.post("/aboutus/UpdateText", updateAboutUsText);
+router.delete("/aboutus/:id", deleteAboutUsImage);
 
 // Comment routes
 router.get("/comments", getAllComments);

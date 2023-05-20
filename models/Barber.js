@@ -17,10 +17,6 @@ const BarberSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
-    aboutUs: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'AboutUs'
-    },
     locations: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Location'
