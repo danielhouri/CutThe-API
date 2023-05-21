@@ -255,4 +255,37 @@ const AddClientToBarber = async (req, res) => {
     }
 };
 
-module.exports = { AddClientToBarber, removeClientFromBarber, removeClientFromBarber, getBarberClients, createBarber, getAllBarbers, getBarberById, updateBarber, deleteBarber, authBarber, getClosestBarber, getBarberBySearch };
+
+// Update a service by ID
+const updatePaymentMethod = async (req, res) => {
+    try {
+        const token = req.headers.authorization;
+        const decodedToken = await tokenValidation(token);
+
+        if (!decodedToken) {
+            res.status(401).json({ message: "Unauthorized" });
+            return;
+        }
+        const { email } = decodedToken;
+
+        let barber = await Barber.findOne({ email });
+        if (!barber) {
+            return res.status(401).json({ message: "Unauthorized" });
+        }
+
+        const type = req.params.type;
+        console.log(type)
+
+        barber.pay_barber_cash = (type == 2 || type == 3) ? true : false;
+        barber.pay_barber_credit_card = (type == 1 || type == 3) ? true : false;
+
+        await barber.save()
+        res.status(201).json(barber);
+    } catch (err) {
+        console.log(err)
+        res.status(400).send(err);
+    }
+};
+
+
+module.exports = { updatePaymentMethod, AddClientToBarber, removeClientFromBarber, removeClientFromBarber, getBarberClients, createBarber, getAllBarbers, getBarberById, updateBarber, deleteBarber, authBarber, getClosestBarber, getBarberBySearch };

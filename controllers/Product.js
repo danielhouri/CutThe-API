@@ -1,4 +1,7 @@
 const Product = require('../models/Product');
+const Barber = require('../models/Barber');
+
+const { tokenValidation } = require("../tools");
 
 // CREATE
 async function createProduct(req, res) {
@@ -76,4 +79,28 @@ async function getProductsByBarberId(req, res) {
     }
 }
 
-module.exports = { createProduct, getAllProducts, getProductById, updateProduct, deleteProduct, getProductsByBarberId };
+async function getProductsByToken(req, res) {
+    try {
+        const token = req.headers.authorization;
+        const decodedToken = await tokenValidation(token);
+
+        if (!decodedToken) {
+            res.status(401).json({ message: "Unauthorized" });
+            return;
+        }
+        const { email } = decodedToken;
+
+        let barber = await Barber.findOne({ email });
+        if (!barber) {
+            return res.status(401).json({ message: "Unauthorized" });
+        }
+
+        const products = await Product.find({ barber: barber._id });
+        res.send(products);
+    } catch (err) {
+        console.error(err);
+        throw err;
+    }
+}
+
+module.exports = { getProductsByToken, createProduct, getAllProducts, getProductById, updateProduct, deleteProduct, getProductsByBarberId };
