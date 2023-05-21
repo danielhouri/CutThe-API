@@ -1,7 +1,7 @@
 const { getClientInfo, removeStylePicture, getStylePictures, addStylePicture, getClientById, updateClient, deleteClient, authClient, getClientAppointments, updateClientProfilePicture, updateClientPreferredBarber } = require("./controllers/Client");
 const { AddClientToBarber, removeClientFromBarber, getBarberClients, createBarber, getAllBarbers, getBarberById, updateBarber, deleteBarber, authBarber, getClosestBarber, getBarberBySearch } = require("./controllers/Barber");
 const { createLocation, getAllLocations, getLocationById, updateLocation, deleteLocation, getBarberLocations } = require("./controllers/Location");
-const { createService, getAllServices, getServiceById, updateService, deleteService, getServicesByBarberId } = require("./controllers/Service");
+const { getServicesByToken, createService, getServiceById, updateService, deleteService, getServicesByBarberId } = require("./controllers/Service");
 const { createSlot, getAllSlots, getSlotById, updateSlot, deleteSlot, getSlotsByBarberAndLocation } = require("./controllers/Slot");
 const { updateAppointmentTime, createAppointmentByBarber, getBarberAppointmentsByMonth, createAppointmentByClient, getAppointmentById, updateAppointment, deleteAppointment, cancelAppointment } = require("./controllers/Appointment");
 const { deleteAboutUsImage, updateAboutUsText, updateAboutUsImageList, createAboutUs, getAllAboutUs, getAboutUsById, updateAboutUsById, getAboutUsByBarberId } = require("./controllers/AboutUs");
@@ -48,12 +48,13 @@ router.get("/locations/baber/:id", getBarberLocations);
 
 
 // Service routes
-router.get("/services", getAllServices);
+router.get("/services", getServicesByToken);
 router.get("/services/:id", getServiceById);
 router.post("/services", createService);
 router.put("/services/:id", updateService);
 router.delete("/services/:id", deleteService);
 router.get("/services/barber/:id", getServicesByBarberId);
+
 
 // Slot routes
 router.get("/slots", getAllSlots);

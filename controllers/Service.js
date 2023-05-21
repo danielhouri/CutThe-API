@@ -1,23 +1,42 @@
 const Service = require("../models/Service");
+const Barber = require("../models/Barber");
+const { tokenValidation } = require("../tools");
 
 // Create a new service
 const createService = async (req, res) => {
     try {
-        const service = new Service(req.body);
+        const token = req.headers.authorization;
+        const decodedToken = await tokenValidation(token);
+
+        if (!decodedToken) {
+            res.status(401).json({ message: "Unauthorized" });
+            return;
+        }
+        const { email } = decodedToken;
+
+        let barber = await Barber.findOne({ email });
+        if (!barber) {
+            return res.status(401).json({ message: "Unauthorized" });
+        }
+
+        const { name, duration, price } = req.body
+
+        const service = new Service({
+            barber: barber._id,
+            name,
+            duration,
+            price
+        }
+        );
+
+
         await service.save();
+        console.log(service)
+
         res.status(201).send(service);
     } catch (err) {
+        console.log(err)
         res.status(400).send(err);
-    }
-};
-
-// Get all services
-const getAllServices = async (req, res) => {
-    try {
-        const services = await Service.find();
-        res.send(services);
-    } catch (err) {
-        res.status(500).send(err);
     }
 };
 
@@ -38,12 +57,29 @@ const getServiceById = async (req, res) => {
 // Update a service by ID
 const updateService = async (req, res) => {
     try {
+        const token = req.headers.authorization;
+        const decodedToken = await tokenValidation(token);
+
+        if (!decodedToken) {
+            res.status(401).json({ message: "Unauthorized" });
+            return;
+        }
+        const { email } = decodedToken;
+
+        let barber = await Barber.findOne({ email });
+        if (!barber) {
+            return res.status(401).json({ message: "Unauthorized" });
+        }
+
+        const { name, duration, price } = req.body
+
         const service = await Service.findByIdAndUpdate(
             req.params.id,
-            req.body,
+            {
+                name: name, duration: duration, price: price
+            },
             {
                 new: true,
-                runValidators: true,
             }
         );
         if (!service) {
@@ -52,6 +88,7 @@ const updateService = async (req, res) => {
             res.send(service);
         }
     } catch (err) {
+        console.log(err)
         res.status(400).send(err);
     }
 };
@@ -59,13 +96,29 @@ const updateService = async (req, res) => {
 // Delete a service by ID
 const deleteService = async (req, res) => {
     try {
+        const token = req.headers.authorization;
+        const decodedToken = await tokenValidation(token);
+
+        if (!decodedToken) {
+            res.status(401).json({ message: "Unauthorized" });
+            return;
+        }
+        const { email } = decodedToken;
+
+        let barber = await Barber.findOne({ email });
+        if (!barber) {
+            return res.status(401).json({ message: "Unauthorized" });
+        }
+
         const service = await Service.findByIdAndDelete(req.params.id);
+
         if (!service) {
             res.status(404).send("Service not found");
         } else {
             res.send(service);
         }
     } catch (err) {
+        console.log(err);
         res.status(500).send(err);
     }
 };
@@ -82,5 +135,30 @@ const getServicesByBarberId = async (req, res) => {
     }
 };
 
+// Get services of a baber
+const getServicesByToken = async (req, res) => {
+    try {
+        const token = req.headers.authorization;
+        const decodedToken = await tokenValidation(token);
 
-module.exports = { createService, getAllServices, getServiceById, updateService, deleteService, getServicesByBarberId };
+        if (!decodedToken) {
+            res.status(401).json({ message: "Unauthorized" });
+            return;
+        }
+        const { email } = decodedToken;
+
+        let barber = await Barber.findOne({ email });
+        if (!barber) {
+            return res.status(401).json({ message: "Unauthorized" });
+        }
+
+        const services = await Service.find({ barber: barber._id });
+        res.send(services);
+
+    } catch (err) {
+        console.log(err)
+        res.status(500).send(err);
+    }
+};
+
+module.exports = { getServicesByToken, createService, getServiceById, updateService, deleteService, getServicesByBarberId };
