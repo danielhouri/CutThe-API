@@ -6,19 +6,33 @@ const { tokenValidation } = require("../tools");
 // CREATE
 async function createProduct(req, res) {
     try {
-        const product = await Product.create(req.body);
+        const token = req.headers.authorization;
+        const decodedToken = await tokenValidation(token);
+
+        if (!decodedToken) {
+            res.status(401).json({ message: "Unauthorized" });
+            return;
+        }
+        const { email } = decodedToken;
+
+        let barber = await Barber.findOne({ email });
+        if (!barber) {
+            return res.status(401).json({ message: "Unauthorized" });
+        }
+
+        const { title, description, price, image, quantity } = req.body;
+
+        const product = await Product.create({
+            barber: barber._id,
+            title,
+            description,
+            price,
+            image,
+            quantity
+        });
         res.status(201).json(product);
     } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-}
-
-// READ
-async function getAllProducts(req, res) {
-    try {
-        const products = await Product.find();
-        res.json(products);
-    } catch (err) {
+        console.log(err);
         res.status(500).json({ error: err.message });
     }
 }
@@ -39,9 +53,31 @@ async function getProductById(req, res) {
 // UPDATE
 async function updateProduct(req, res) {
     try {
+        const token = req.headers.authorization;
+        const decodedToken = await tokenValidation(token);
+
+        if (!decodedToken) {
+            res.status(401).json({ message: "Unauthorized" });
+            return;
+        }
+        const { email } = decodedToken;
+
+        let barber = await Barber.findOne({ email });
+        if (!barber) {
+            return res.status(401).json({ message: "Unauthorized" });
+        }
+
+        const { title, description, price, image, quantity } = req.body;
+
         const product = await Product.findByIdAndUpdate(
             req.params.id,
-            req.body,
+            {
+                title,
+                description,
+                price,
+                image,
+                quantity
+            },
             { new: true }
         );
         if (!product) {
@@ -50,6 +86,7 @@ async function updateProduct(req, res) {
         }
         res.json(product);
     } catch (err) {
+        console.log(err);
         res.status(500).json({ error: err.message });
     }
 }
@@ -57,6 +94,20 @@ async function updateProduct(req, res) {
 // DELETE
 async function deleteProduct(req, res) {
     try {
+        const token = req.headers.authorization;
+        const decodedToken = await tokenValidation(token);
+
+        if (!decodedToken) {
+            res.status(401).json({ message: "Unauthorized" });
+            return;
+        }
+        const { email } = decodedToken;
+
+        let barber = await Barber.findOne({ email });
+        if (!barber) {
+            return res.status(401).json({ message: "Unauthorized" });
+        }
+        console.log(req.params.id)
         const product = await Product.findByIdAndDelete(req.params.id);
         if (!product) {
             res.status(404).json({ error: 'Product not found' });
@@ -103,4 +154,4 @@ async function getProductsByToken(req, res) {
     }
 }
 
-module.exports = { getProductsByToken, createProduct, getAllProducts, getProductById, updateProduct, deleteProduct, getProductsByBarberId };
+module.exports = { getProductsByToken, createProduct, getProductById, updateProduct, deleteProduct, getProductsByBarberId };

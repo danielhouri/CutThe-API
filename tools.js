@@ -220,7 +220,7 @@ async function searchBarber(city, country, lat, lon, store, home, cash, credit) 
             select: 'pictures'
         }
     });
-
+    console.log(locations)
     const filteredBarbers = locations.filter((location) => {
         let isMatch = true;
         // if (store === "true" && !barber.store) {

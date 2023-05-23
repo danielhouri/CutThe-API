@@ -227,7 +227,6 @@ const addStylePicture = async (req, res) => {
         }
 
         client.stylePictures.push(pictureUrl);
-        console.log(pictureUrl)
 
         await client.save();
         res.status(200).json({ message: "Style picture added successfully" });
@@ -254,7 +253,6 @@ const getStylePictures = async (req, res) => {
         }
 
         const stylePictures = client.stylePictures;
-        console.log(stylePictures)
 
         res.status(200).json({ stylePictures });
     } catch (err) {

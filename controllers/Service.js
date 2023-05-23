@@ -31,8 +31,6 @@ const createService = async (req, res) => {
 
 
         await service.save();
-        console.log(service)
-
         res.status(201).send(service);
     } catch (err) {
         console.log(err)

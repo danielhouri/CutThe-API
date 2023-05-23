@@ -4,6 +4,7 @@ const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID)
 
 const Barber = require("../models/Barber");
 const Client = require("../models/Client");
+const Location = require("../models/Location");
 
 const { findClosestBarbers, tokenValidation, searchBarber } = require('../tools');
 
@@ -274,7 +275,6 @@ const updatePaymentMethod = async (req, res) => {
         }
 
         const type = req.params.type;
-        console.log(type)
 
         barber.pay_barber_cash = (type == 2 || type == 3) ? true : false;
         barber.pay_barber_credit_card = (type == 1 || type == 3) ? true : false;
@@ -287,5 +287,40 @@ const updatePaymentMethod = async (req, res) => {
     }
 };
 
+const setPreferredLocation = async (req, res) => {
+    try {
+        const token = req.headers.authorization;
+        const decodedToken = await tokenValidation(token);
 
-module.exports = { updatePaymentMethod, AddClientToBarber, removeClientFromBarber, removeClientFromBarber, getBarberClients, createBarber, getAllBarbers, getBarberById, updateBarber, deleteBarber, authBarber, getClosestBarber, getBarberBySearch };
+        if (!decodedToken) {
+            res.status(401).json({ message: "Unauthorized" });
+            return;
+        }
+        const { email } = decodedToken;
+
+        let barber = await Barber.findOne({ email });
+        if (!barber) {
+            return res.status(401).json({ message: "Unauthorized" });
+        }
+
+        const locationId = req.params.locationId;
+
+        // Find the location by ID
+        const location = await Location.findById(locationId);
+        if (!location) {
+            return res.status(404).json({ message: "Location not found" });
+        }
+
+        // Update the preferred location of the barber
+        barber.preferred_location = locationId;
+        await barber.save();
+
+        res.status(200).json({ message: "Preferred location set successfully", barber });
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({ message: "Server error" });
+    }
+};
+
+
+module.exports = { setPreferredLocation, updatePaymentMethod, AddClientToBarber, removeClientFromBarber, removeClientFromBarber, getBarberClients, createBarber, getAllBarbers, getBarberById, updateBarber, deleteBarber, authBarber, getClosestBarber, getBarberBySearch };

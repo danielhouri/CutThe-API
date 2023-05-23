@@ -38,7 +38,12 @@ const BarberSchema = new mongoose.Schema({
         ref: 'Client',
         required: true,
         default: []
-    }]
+    }],
+    aboutUs: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'AboutUs',
+        required: true,
+    }
 });
 
 module.exports = mongoose.model("Barber", BarberSchema);

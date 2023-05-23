@@ -34,7 +34,8 @@ const LocationSchema = new mongoose.Schema({
     }],
     barber: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Barber'
+        ref: 'Barber',
+        required: true
     }
 });
 

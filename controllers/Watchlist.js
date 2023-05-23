@@ -88,7 +88,7 @@ const createWaitlistByClient = async (req, res) => {
             res.status(401).json({ message: "Unauthorized" });
             return;
         }
-        console.log(req.body)
+
         const { barberId, locationId, date, duration, morning, afternoon, night } = req.body;
 
         const waitlistItem = new Waitlist({
