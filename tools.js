@@ -285,5 +285,29 @@ async function searchBarber(city, country, lat, lon, store, home, cash, credit) 
     const results = await Promise.all(barbersWithDistanceAndRating);
     return results;
 }
+var admin = require('firebase-admin');
+var serviceAccount = require("./cutthe-493de-firebase-adminsdk-dv32s-bce11149b4.json");
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount)
+});
+async function sendNotifaction(token) {
+    const message = {
+        token: token,
+        notification: {
+          body: 'hello everybody i will not be available in the dates of 15/10/23-22/10/23 please book in the advence due to pressure',
+          title: 'shlomi choen',
+        },
+    };
+    admin
+  .messaging()
+  .send(message)
+  .then(response => {
+    console.log('Successfully sent message:', response);
+  })
+  .catch(error => {
+    console.log('Error sending message:', error);
+  });
+}
 
-module.exports = { tokenValidation, getAvailableSlots, findClosestBarbers, searchBarber };
+
+module.exports = { tokenValidation, getAvailableSlots, findClosestBarbers, searchBarber,sendNotifaction };

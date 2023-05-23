@@ -4,6 +4,7 @@ const express = require('express');
 const dotenv = require("dotenv");
 const cors = require("cors");
 const bodyParser = require('body-parser');
+const { sendNotifaction } = require("./tools");
 
 const app = express();
 app.use(cors());
@@ -30,3 +31,5 @@ mongoose
 app.listen(3000, () => {
     console.log('Server is listening on port 3000');
 });
+
+sendNotifaction('fbmQhHKXQGavzjxhJ4foK4:APA91bG6ZpyTyG-nSD12ksX7JxCNs4DMNsVkBm1yVIJ7uCzUJQOLddkvj-Yvke_dJxeb3q1rKsFZqFaVggPcV63_b9uqgtqNjsChWZlwDUh2_0_fq7Ux44UA-RVeSRp1ZWbh5UDlb4gX');
