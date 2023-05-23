@@ -4,9 +4,9 @@ const Barber = require("../models/Barber");
 const { tokenValidation } = require("../tools");
 
 const authClient = async (req, res) => {
-    const token = req.headers.authorization;
 
     try {
+        const token = req.headers.authorization;
         const decodedToken = await tokenValidation(token);
 
         if (!decodedToken) {
@@ -18,8 +18,17 @@ const authClient = async (req, res) => {
 
         let client = await Client.findOne({ email });
 
+        const { messagingToken } = req.body;
+
         if (!client) {
             client = new Client({ name, given_name, family_name, email });
+            await client.save();
+        }
+
+        // Check if the messagingToken already exists in the messaging_token array
+        if (messagingToken && !client.messaging_token.includes(messagingToken)) {
+            console.log(messagingToken)
+            client.messaging_token.push(messagingToken);
             await client.save();
         }
 

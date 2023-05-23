@@ -130,10 +130,16 @@ const deleteLocation = async (req, res) => {
 
         const location = await Location.findByIdAndDelete(req.params.id);
         if (!location) {
-            res.status(404).send("Location not found");
-        } else {
-            res.send(location);
+            return res.status(404).send("Location not found");
         }
+
+        // Check if the deleted location matches the preferred_location
+        if (barber.preferred_location && barber.preferred_location.toString() === location._id) {
+            barber.preferred_location = undefined;
+            await barber.save();
+        }
+
+        res.send(location);
     } catch (err) {
         console.log(err)
         res.status(500).send(err);

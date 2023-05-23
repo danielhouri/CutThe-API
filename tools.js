@@ -289,7 +289,7 @@ async function searchBarber(city, country, lat, lon, store, home, cash, credit) 
     return results;
 }
 
-async function sendNotifaction(token) {
+async function sendNotification(token) {
     const message = {
         token: token,
         notification: {
@@ -308,4 +308,4 @@ async function sendNotifaction(token) {
 }
 
 
-module.exports = { tokenValidation, getAvailableSlots, findClosestBarbers, searchBarber, sendNotifaction };
+module.exports = { tokenValidation, getAvailableSlots, findClosestBarbers, searchBarber, sendNotification };

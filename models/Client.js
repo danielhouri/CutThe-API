@@ -32,6 +32,15 @@ const ClientSchema = new mongoose.Schema({
     stylePictures: [{
         type: String,
         default: []
+    }],
+    phone_number: {
+        type: String,
+        default: '',
+    },
+    messaging_token: [{
+        type: String,
+        default: [],
+        required: true
     }]
 });
 

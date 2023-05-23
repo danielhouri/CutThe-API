@@ -1,8 +1,9 @@
 const Appointment = require("../models/Appointment");
 const Client = require("../models/Client");
 const Barber = require("../models/Barber");
+const Product = require("../models/Product");
 
-const { tokenValidation } = require("../tools");
+const { tokenValidation, sendNotification } = require("../tools");
 
 // Create a new appointment
 const createAppointmentByClient = async (req, res) => {
@@ -36,14 +37,31 @@ const createAppointmentByClient = async (req, res) => {
 
         const savedAppointment = await appointment.save();
 
+        // Update the quantity of ordered products
+        for (const orderedProduct of ordered_products) {
+            const { product, quantity } = orderedProduct;
+
+            // Find the product and subtract the quantity bought
+            await Product.updateOne(
+                { _id: product },
+                { $inc: { quantity: -quantity } }
+            );
+        }
+
         // Add the appointment id to the barber
         await Client.updateOne(
             { _id: client._id },
             { $push: { appointments: savedAppointment._id } }
         );
 
+        // Send notifications to all messaging_token values
+        for (const messagingToken of client.messaging_token) {
+            await sendNotification(messagingToken);
+        }
+
         res.status(201).send(appointment);
     } catch (err) {
+        console.log(err)
         res.status(400).send(err);
     }
 };
@@ -181,6 +199,10 @@ const cancelAppointment = async (req, res) => {
                 path: "barber",
                 select: "email",
             },
+            {
+                path: "ordered_products.product",
+                select: "quantity",
+            },
         ]);
 
         if (!appointment) {
@@ -193,17 +215,30 @@ const cancelAppointment = async (req, res) => {
             return;
         }
 
-        appointment.status = true;
+        // Check if the appointment is already canceled
+        if (appointment.status) {
+            res.status(400).send("Appointment is already canceled");
+            return;
+        }
 
+        // Set appointment status to canceled
+        appointment.status = true;
         await appointment.save();
+
+        // Add the ordered products' quantity back to the product schema
+        for (const orderedProduct of appointment.ordered_products) {
+            const { product, quantity } = orderedProduct;
+            await Product.findByIdAndUpdate(product._id, { $inc: { quantity: quantity } });
+        }
+
         res.send(appointment);
     } catch (err) {
+        console.log(err);
         res.status(500).send(err);
     }
 };
 
 const getBarberAppointmentsByMonth = async (req, res) => {
-
     try {
         const token = req.headers.authorization;
 
