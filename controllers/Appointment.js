@@ -3,7 +3,7 @@ const Client = require("../models/Client");
 const Barber = require("../models/Barber");
 const Product = require("../models/Product");
 
-const { tokenValidation, sendNotification } = require("../tools");
+const { tokenValidation, sendNotification, findWaitListAppointment } = require("../tools");
 
 // Create a new appointment
 const createAppointmentByClient = async (req, res) => {
@@ -232,6 +232,8 @@ const cancelAppointment = async (req, res) => {
         }
 
         res.send(appointment);
+
+        findWaitListAppointment(appointment.barber._id, appointment.location._id, appointment.start_time);
     } catch (err) {
         console.log(err);
         res.status(500).send(err);

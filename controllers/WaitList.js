@@ -1,11 +1,12 @@
-const Waitlist = require('../models/Waitlist');
+const WaitList = require('../models/WaitList');
 const Client = require('../models/Client');
+
 const { tokenValidation } = require('../tools');
 
 // Create a new waitlist entry
 const createWaitlistEntry = async (req, res) => {
     try {
-        const waitlistEntry = new Waitlist(req.body);
+        const waitlistEntry = new WaitList(req.body);
         await waitlistEntry.save();
         res.status(201).send(waitlistEntry);
     } catch (error) {
@@ -16,7 +17,7 @@ const createWaitlistEntry = async (req, res) => {
 // Get all waitlist entries
 const getAllWaitlistEntries = async (req, res) => {
     try {
-        const waitlistEntries = await Waitlist.find();
+        const waitlistEntries = await WaitList.find();
         res.send(waitlistEntries);
     } catch (error) {
         res.status(500).send(error);
@@ -26,7 +27,7 @@ const getAllWaitlistEntries = async (req, res) => {
 // Get a single waitlist entry by ID
 const getWaitlistEntryById = async (req, res) => {
     try {
-        const waitlistEntry = await Waitlist.findById(req.params.id);
+        const waitlistEntry = await WaitList.findById(req.params.id);
         if (!waitlistEntry) {
             res.status(404).send('Waitlist entry not found');
         } else {
@@ -40,7 +41,7 @@ const getWaitlistEntryById = async (req, res) => {
 // Update a waitlist entry by ID
 const updateWaitlistEntry = async (req, res) => {
     try {
-        const waitlistEntry = await Waitlist.findByIdAndUpdate(
+        const waitlistEntry = await WaitList.findByIdAndUpdate(
             req.params.id,
             req.body,
             {
@@ -61,7 +62,7 @@ const updateWaitlistEntry = async (req, res) => {
 // Delete a waitlist entry by ID
 const deleteWaitlistEntry = async (req, res) => {
     try {
-        const waitlistEntry = await Waitlist.findByIdAndDelete(req.params.id);
+        const waitlistEntry = await WaitList.findByIdAndDelete(req.params.id);
         if (!waitlistEntry) {
             res.status(404).send('Waitlist entry not found');
         } else {
@@ -73,9 +74,8 @@ const deleteWaitlistEntry = async (req, res) => {
 };
 
 const createWaitlistByClient = async (req, res) => {
-    const token = req.headers.authorization;
-
     try {
+        const token = req.headers.authorization;
         const decodedToken = await tokenValidation(token);
         if (!decodedToken) {
             res.status(401).json({ message: "Unauthorized" });
@@ -91,7 +91,7 @@ const createWaitlistByClient = async (req, res) => {
 
         const { barberId, locationId, date, duration, morning, afternoon, night } = req.body;
 
-        const waitlistItem = new Waitlist({
+        const waitlistItem = new WaitList({
             barber: barberId,
             location: locationId,
             client: client._id,

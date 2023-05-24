@@ -7,7 +7,7 @@ const { updateAppointmentTime, createAppointmentByBarber, getBarberAppointmentsB
 const { deleteAboutUsImage, updateAboutUsText, updateAboutUsImageList, createAboutUs, getAllAboutUs, getAboutUsById, updateAboutUsById, getAboutUsByBarberId } = require("./controllers/AboutUs");
 const { createComment, getAllComments, getCommentById, updateCommentById, deleteCommentById, getCommentsByBarberId, createCommentByClient } = require("./controllers/Comment");
 const { getProductsByToken, createProduct, getProductById, updateProduct, deleteProduct, getProductsByBarberId } = require("./controllers/Product");
-const { createWaitlistByClient } = require("./controllers/Watchlist");
+const { createWaitlistByClient } = require("./controllers/WaitList");
 
 const router = require("express").Router();
 

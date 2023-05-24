@@ -2,7 +2,7 @@ const Slot = require("../models/Slot");
 const Barber = require("../models/Barber");
 const Location = require("../models/Location");
 
-const { getAvailableSlots, tokenValidation } = require("../tools");
+const { getAvailableSlots, tokenValidation, findWaitListAppointment } = require("../tools");
 
 // Create a new slot
 const createSlot = async (req, res) => {
@@ -36,6 +36,9 @@ const createSlot = async (req, res) => {
         await existingLocation.save();
 
         res.status(201).send(slot);
+
+        // Send notification to client that are in the waiting list
+        findWaitListAppointment(barber._id, location, start_time);
     } catch (err) {
         console.log(err)
         res.status(400).send(err);

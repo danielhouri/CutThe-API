@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-const WaitlistSchema = new mongoose.Schema({
+const WaitListSchema = new mongoose.Schema({
     barber: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Barber',
@@ -38,7 +38,7 @@ const WaitlistSchema = new mongoose.Schema({
     }
 });
 
-module.exports = mongoose.model("Waitlist", WaitlistSchema);
+module.exports = mongoose.model("WaitList", WaitListSchema);
 
 
 

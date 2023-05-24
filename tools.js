@@ -5,6 +5,7 @@ const Slot = require("./models/Slot");
 const Appointment = require("./models/Appointment");
 const Location = require('./models/Location');
 const Comment = require('./models/Comment');
+const WaitList = require("./models/WaitList");
 const geolib = require('geolib');
 const moment = require('moment/moment');
 
@@ -164,7 +165,7 @@ async function getAvailableSlots(barberId, locationId) {
         }
     }
 
-    //console.log(availableTimeSlots)
+    // console.log(availableTimeSlots)
     return availableTimeSlots;
 }
 
@@ -223,7 +224,7 @@ async function searchBarber(city, country, lat, lon, store, home, cash, credit) 
             select: 'pictures'
         }
     });
-    console.log(locations)
+
     const filteredBarbers = locations.filter((location) => {
         let isMatch = true;
         // if (store === "true" && !barber.store) {
@@ -307,5 +308,39 @@ async function sendNotification(token) {
         });
 }
 
+async function findWaitListAppointment(barberId, locationId, date) {
+    const time = moment(date).format('HH:mm')
+    let isMorning = time <= '12:00';
+    let isAfternoon = time >= '12:00' && time < '18:00';
+    let isEvening = time >= '18:00';
 
-module.exports = { tokenValidation, getAvailableSlots, findClosestBarbers, searchBarber, sendNotification };
+    // Find waiting list clients for the canceled appointment
+    const waitingListClients = await WaitList.find({
+        barber: barberId,
+        location: locationId,
+        date: {
+            $gte: moment(date).startOf('day'),
+            $lte: moment(date).endOf('day'),
+        },
+        $or: [
+            { morning: isMorning },
+            { afternoon: isAfternoon },
+            { evening: isEvening },
+        ]
+    }).populate("client", "messaging_token name");
+
+    // Send notifications to all waiting list clients
+    for (const waitingListClient of waitingListClients) {
+        const { client } = waitingListClient;
+
+        for (const token of client.messaging_token) {
+            // Send notification to the waiting list client
+            await sendNotification(token);
+        }
+
+        // Remove the waiting list client
+        await WaitList.deleteOne({ _id: waitingListClient._id });
+    }
+}
+
+module.exports = { findWaitListAppointment, tokenValidation, getAvailableSlots, findClosestBarbers, searchBarber, sendNotification };
