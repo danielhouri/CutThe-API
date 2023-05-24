@@ -27,14 +27,14 @@ const getAllAboutUs = async (req, res) => {
 // Get a single AboutUs entry by id
 const getAboutUsById = async (req, res) => {
     try {
-        // const token = req.headers.authorization;
-        // const decodedToken = await tokenValidation(token);
+        const token = req.headers.authorization;
+        const decodedToken = await tokenValidation(token);
 
-        // if (!decodedToken) {
-        //     return res.status(401).json({ message: "Unauthorized" });
-        // }
+        if (!decodedToken) {
+            return res.status(401).json({ message: "Unauthorized" });
+        }
 
-        const email = 'daniel.houriecole@gmail.com';
+        const { email } = decodedToken;
 
         let barber = await Barber.findOne({ email });
         if (!barber) {

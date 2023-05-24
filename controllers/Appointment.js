@@ -193,7 +193,7 @@ const cancelAppointment = async (req, res) => {
         const appointment = await Appointment.findById(req.params.id).populate([
             {
                 path: "client",
-                select: "email",
+                select: "email messaging_token",
             },
             {
                 path: "barber",
@@ -224,6 +224,15 @@ const cancelAppointment = async (req, res) => {
         // Set appointment status to canceled
         appointment.status = true;
         await appointment.save();
+
+        if (appointment.client.email == email) {
+            // Notify barber
+        } else {
+            // Send notifications to all messaging_token values
+            for (const messagingToken of appointment.client.messaging_token) {
+                await sendNotification(messagingToken);
+            }
+        }
 
         // Add the ordered products' quantity back to the product schema
         for (const orderedProduct of appointment.ordered_products) {

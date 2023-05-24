@@ -294,7 +294,7 @@ async function sendNotification(token) {
     const message = {
         token: token,
         notification: {
-            body: 'hello everybody i will not be available in the dates of 15/10/23-22/10/23 please book in the advence due to pressure',
+            body: {code:1, time:'10/05/22'},
             title: 'shlomi choen',
         },
     };
