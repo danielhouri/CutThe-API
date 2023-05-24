@@ -25,6 +25,14 @@ const authBarber = async (req, res) => {
             return res.status(401).json({ message: "Unauthorized" }); // return unauthorized status
         }
 
+        const { messagingToken } = req.body;
+        // Check if the messagingToken already exists in the messaging_token array
+        if (messagingToken && !barber.messaging_token.includes(messagingToken)) {
+            console.log(messagingToken)
+            barber.messaging_token.push(messagingToken);
+            await barber.save();
+        }
+
         res.status(201).json({ barber, token }); // return barber data and token
     } catch (err) {
         console.log(err);

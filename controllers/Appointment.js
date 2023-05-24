@@ -197,7 +197,7 @@ const cancelAppointment = async (req, res) => {
             },
             {
                 path: "barber",
-                select: "email",
+                select: "email messaging_token",
             },
             {
                 path: "ordered_products.product",
@@ -227,7 +227,12 @@ const cancelAppointment = async (req, res) => {
 
         if (appointment.client.email == email) {
             // Notify barber
+            // Send notifications to all messaging_token values
+            for (const messagingToken of appointment.barber.messaging_token) {
+                await sendNotification(messagingToken);
+            }
         } else {
+            // Notify client
             // Send notifications to all messaging_token values
             for (const messagingToken of appointment.client.messaging_token) {
                 await sendNotification(messagingToken);
