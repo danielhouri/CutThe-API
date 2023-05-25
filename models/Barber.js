@@ -10,6 +10,14 @@ const BarberSchema = new mongoose.Schema({
         required: true,
         unique: true
     },
+    given_name: {
+        type: String,
+        required: true
+    },
+    family_name: {
+        type: String,
+        required: true
+    },
     profilePicture: {
         type: String
     },

@@ -290,12 +290,12 @@ async function searchBarber(city, country, lat, lon, store, home, cash, credit) 
     return results;
 }
 
-async function sendNotification(token) {
+async function sendNotification(token, name, payload) {
     const message = {
         token: token,
         notification: {
-            body: {code:1, time:'10/05/22'},
-            title: 'shlomi choen',
+            body: JSON.stringify(payload),
+            title: name,
         },
     };
     admin.messaging()
@@ -308,7 +308,7 @@ async function sendNotification(token) {
         });
 }
 
-async function findWaitListAppointment(barberId, locationId, date) {
+async function findWaitListAppointment(barberId, name, locationId, date) {
     const time = moment(date).format('HH:mm')
     let isMorning = time <= '12:00';
     let isAfternoon = time >= '12:00' && time < '18:00';
@@ -335,7 +335,7 @@ async function findWaitListAppointment(barberId, locationId, date) {
 
         for (const token of client.messaging_token) {
             // Send notification to the waiting list client
-            await sendNotification(token);
+            await sendNotification(token, name, { code: 2, payload: { date: moment(start_time, 'DD/MM/YY') } });
         }
 
         // Remove the waiting list client

@@ -23,9 +23,16 @@ const createAppointmentByClient = async (req, res) => {
             return;
         }
 
-        const { barber, start_time, end_time, service, location, ordered_products, price } = req.body;
+        const { barberId, start_time, end_time, service, location, ordered_products, price } = req.body;
+
+        const barber = await Barber.findById(barberId);
+        if (!barber) {
+            res.status(401).json({ message: 'Unauthorized' });
+            return;
+        }
+
         const appointment = new Appointment({
-            barber,
+            barber: barberId,
             client: client._id,
             start_time,
             end_time,
@@ -55,8 +62,8 @@ const createAppointmentByClient = async (req, res) => {
         );
 
         // Send notifications to all messaging_token values
-        for (const messagingToken of client.messaging_token) {
-            await sendNotification(messagingToken);
+        for (const messagingToken of barber.messaging_token) {
+            await sendNotification(messagingToken, barber.name, { code: 4, payload: { date: moment(start_time, 'DD/MM/YY') } });
         }
 
         res.status(201).send(appointment);
@@ -247,7 +254,7 @@ const cancelAppointment = async (req, res) => {
 
         res.send(appointment);
 
-        findWaitListAppointment(appointment.barber._id, appointment.location._id, appointment.start_time);
+        findWaitListAppointment(appointment.barber._id, appointment.barber.name, appointment.location._id, appointment.start_time);
     } catch (err) {
         console.log(err);
         res.status(500).send(err);
@@ -311,11 +318,17 @@ const createAppointmentByBarber = async (req, res) => {
             return;
         }
 
-        const { client, start_time, end_time, service, location, ordered_products, price } = req.body;
+        const { clientId, start_time, end_time, service, location, ordered_products, price } = req.body;
+
+        const client = await Client.findById(clientId);
+        if (!client) {
+            res.status(401).json({ message: 'Unauthorized' });
+            return;
+        }
 
         const appointment = new Appointment({
             barber: barber._id,
-            client: client,
+            client: clientId,
             start_time,
             end_time,
             service,
@@ -328,9 +341,25 @@ const createAppointmentByBarber = async (req, res) => {
 
         // Add the appointment id to the barber
         await Client.updateOne(
-            { _id: client },
+            { _id: clientId },
             { $push: { appointments: savedAppointment._id } }
         );
+
+        // Update the quantity of ordered products
+        for (const orderedProduct of ordered_products) {
+            const { product, quantity } = orderedProduct;
+
+            // Find the product and subtract the quantity bought
+            await Product.updateOne(
+                { _id: product },
+                { $inc: { quantity: -quantity } }
+            );
+        }
+
+        // Send notifications to all messaging_token values
+        for (const messagingToken of client.messaging_token) {
+            await sendNotification(messagingToken);
+        }
 
         res.status(201).send(appointment);
     } catch (err) {

@@ -26,9 +26,7 @@ const createService = async (req, res) => {
             name,
             duration,
             price
-        }
-        );
-
+        });
 
         await service.save();
         res.status(201).send(service);

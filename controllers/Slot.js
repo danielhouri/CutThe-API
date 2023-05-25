@@ -38,7 +38,7 @@ const createSlot = async (req, res) => {
         res.status(201).send(slot);
 
         // Send notification to client that are in the waiting list
-        findWaitListAppointment(barber._id, location, start_time);
+        findWaitListAppointment(barber._id, barber.name, location, start_time);
     } catch (err) {
         console.log(err)
         res.status(400).send(err);
