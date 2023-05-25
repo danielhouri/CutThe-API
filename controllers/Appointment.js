@@ -2,6 +2,7 @@ const Appointment = require("../models/Appointment");
 const Client = require("../models/Client");
 const Barber = require("../models/Barber");
 const Product = require("../models/Product");
+const moment = require('moment/moment');
 
 const { tokenValidation, sendNotification, findWaitListAppointment } = require("../tools");
 
@@ -63,7 +64,10 @@ const createAppointmentByClient = async (req, res) => {
 
         // Send notifications to all messaging_token values
         for (const messagingToken of barber.messaging_token) {
-            await sendNotification(messagingToken, barber.name, { code: 4, payload: { date: moment(start_time, 'DD/MM/YY') } });
+            const date = moment(start_time).format('DD/MM/YYYY')
+            const time = moment(start_time).format('HH:mm')
+
+            await sendNotification(messagingToken, barber.name, { code: 4, payload: { date: date, time: time } });
         }
 
         res.status(201).send(appointment);
@@ -200,11 +204,11 @@ const cancelAppointment = async (req, res) => {
         const appointment = await Appointment.findById(req.params.id).populate([
             {
                 path: "client",
-                select: "email messaging_token",
+                select: "email messaging_token name",
             },
             {
                 path: "barber",
-                select: "email messaging_token",
+                select: "email messaging_token name",
             },
             {
                 path: "ordered_products.product",
@@ -236,13 +240,15 @@ const cancelAppointment = async (req, res) => {
             // Notify barber
             // Send notifications to all messaging_token values
             for (const messagingToken of appointment.barber.messaging_token) {
-                await sendNotification(messagingToken);
+                const date = moment(start_time).format('DD/MM/YYYY')
+                await sendNotification(messagingToken, appointment.client.name, { code: 0, payload: { date: date } });
             }
         } else {
             // Notify client
             // Send notifications to all messaging_token values
             for (const messagingToken of appointment.client.messaging_token) {
-                await sendNotification(messagingToken);
+                const date = moment(start_time).format('DD/MM/YYYY')
+                await sendNotification(messagingToken, appointment.barber.name, { code: 0, payload: { date: date } });
             }
         }
 
@@ -358,11 +364,15 @@ const createAppointmentByBarber = async (req, res) => {
 
         // Send notifications to all messaging_token values
         for (const messagingToken of client.messaging_token) {
-            await sendNotification(messagingToken);
+            const date = moment(start_time).format('DD/MM/YYYY');
+            const time = moment(start_time).format('HH:mm');
+
+            await sendNotification(messagingToken, client.name, { code: 4, payload: { date: date, time: time } });
         }
 
         res.status(201).send(appointment);
     } catch (err) {
+        console.log(err)
         res.status(400).send(err);
     }
 };

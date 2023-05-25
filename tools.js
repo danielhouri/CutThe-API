@@ -291,6 +291,7 @@ async function searchBarber(city, country, lat, lon, store, home, cash, credit) 
 }
 
 async function sendNotification(token, name, payload) {
+    console.log(payload)
     const message = {
         token: token,
         notification: {
@@ -335,7 +336,8 @@ async function findWaitListAppointment(barberId, name, locationId, date) {
 
         for (const token of client.messaging_token) {
             // Send notification to the waiting list client
-            await sendNotification(token, name, { code: 2, payload: { date: moment(start_time, 'DD/MM/YY') } });
+            const date = moment(start_time).format('DD/MM/YYYY')
+            await sendNotification(token, name, { code: 2, payload: { date: date } });
         }
 
         // Remove the waiting list client
