@@ -13,17 +13,6 @@ const createAboutUs = async (req, res) => {
     }
 };
 
-// Get all AboutUs entries
-const getAllAboutUs = async (req, res) => {
-    try {
-        const aboutUsEntries = await AboutUs.find();
-        res.send(aboutUsEntries);
-    } catch (err) {
-        res.status(500).send(err);
-    }
-};
-
-
 // Get a single AboutUs entry by id
 const getAboutUsById = async (req, res) => {
     try {
@@ -203,7 +192,7 @@ const deleteAboutUsImage = async (req, res) => {
     }
 };
 
-module.exports = { deleteAboutUsImage, updateAboutUsText, updateAboutUsImageList, createAboutUs, getAllAboutUs, getAboutUsById, updateAboutUsById, getAboutUsByBarberId };
+module.exports = { deleteAboutUsImage, updateAboutUsText, updateAboutUsImageList, createAboutUs, getAboutUsById, updateAboutUsById, getAboutUsByBarberId };
 
 
 

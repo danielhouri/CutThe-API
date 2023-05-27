@@ -1,10 +1,10 @@
-const { getClientInfo, removeStylePicture, getStylePictures, addStylePicture, getClientById, updateClient, deleteClient, authClient, getClientAppointments, updateClientProfilePicture, updateClientPreferredBarber } = require("./controllers/Client");
-const { setPreferredLocation, updatePaymentMethod, AddClientToBarber, removeClientFromBarber, getBarberClients, createBarber, getAllBarbers, getBarberById, updateBarber, deleteBarber, authBarber, getClosestBarber, getBarberBySearch } = require("./controllers/Barber");
+const { getClientInfo, removeStylePicture, getStylePictures, addStylePicture, getClientById, authClient, getClientAppointments, updateClientProfilePicture, updateClientPreferredBarber } = require("./controllers/Client");
+const { setPreferredLocation, updatePaymentMethod, AddClientToBarber, removeClientFromBarber, getBarberClients, getBarberById, authBarber, getClosestBarber, getBarberBySearch } = require("./controllers/Barber");
 const { createLocation, getAllLocations, updateLocation, deleteLocation, getBarberLocations } = require("./controllers/Location");
 const { getServicesByToken, createService, getServiceById, updateService, deleteService, getServicesByBarberId } = require("./controllers/Service");
 const { createSlot, getAllSlots, getSlotById, updateSlot, deleteSlot, getSlotsByBarberAndLocation } = require("./controllers/Slot");
 const { updateAppointmentTime, createAppointmentByBarber, getBarberAppointmentsByMonth, createAppointmentByClient, getAppointmentById, updateAppointment, deleteAppointment, cancelAppointment } = require("./controllers/Appointment");
-const { deleteAboutUsImage, updateAboutUsText, updateAboutUsImageList, createAboutUs, getAllAboutUs, getAboutUsById, updateAboutUsById, getAboutUsByBarberId } = require("./controllers/AboutUs");
+const { deleteAboutUsImage, updateAboutUsText, updateAboutUsImageList, createAboutUs, getAboutUsById, updateAboutUsById, getAboutUsByBarberId } = require("./controllers/AboutUs");
 const { createComment, getAllComments, getCommentById, updateCommentById, deleteCommentById, getCommentsByBarberId, createCommentByClient } = require("./controllers/Comment");
 const { getProductsByToken, createProduct, getProductById, updateProduct, deleteProduct, getProductsByBarberId } = require("./controllers/Product");
 const { createWaitlistByClient } = require("./controllers/WaitList");
@@ -17,7 +17,6 @@ router.post("/barbers/auth", authBarber);
 
 // Client routes
 router.get("/clients", getClientById);
-router.put("/clients/:id", updateClient);
 router.get("/clients/appointments", getClientAppointments);
 router.post("/clients/ProfilePicture", updateClientProfilePicture);
 router.post("/clients/PreferredBarber", updateClientPreferredBarber);
@@ -27,11 +26,7 @@ router.post("/clients/StylePicture/delete", removeStylePicture);
 router.get("/clients/info/:id", getClientInfo);
 
 // Barber routes
-router.get("/barbers", getAllBarbers);
 router.get("/barbers/:id", getBarberById);
-router.post("/barbers", createBarber);
-router.put("/barbers/:id", updateBarber);
-router.delete("/barbers/:id", deleteBarber);
 router.get("/barbers/closest/:city/:country/:lat/:lon", getClosestBarber);
 router.get("/barbers/search/:city/:country/:lat/:lon/:store/:home/:cash/:credit", getBarberBySearch);
 router.get("/barbers/clients/get", getBarberClients);
@@ -39,7 +34,6 @@ router.delete("/barbers/clients/:id", removeClientFromBarber);
 router.post("/barbers/clients/new", AddClientToBarber);
 router.put("/barbers/PaymentMethod/:type", updatePaymentMethod);
 router.put("/barbers/PreferredLocation/:locationId", setPreferredLocation);
-
 
 // Location routes
 router.get("/locations", getAllLocations);

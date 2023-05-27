@@ -86,35 +86,6 @@ const getClientById = async (req, res) => {
     }
 };
 
-const updateClient = async (req, res) => {
-    try {
-        const client = await Client.findByIdAndUpdate(req.params.id, req.body, {
-            new: true,
-            runValidators: true,
-        });
-        if (!client) {
-            res.status(404).send("Client not found");
-        } else {
-            res.send(client);
-        }
-    } catch (err) {
-        res.status(400).send(err);
-    }
-};
-
-const deleteClient = async (req, res) => {
-    try {
-        const client = await Client.findByIdAndDelete(req.params.id);
-        if (!client) {
-            res.status(404).send("Client not found");
-        } else {
-            res.send(client);
-        }
-    } catch (err) {
-        res.status(500).send(err);
-    }
-};
-
 const getClientAppointments = async (req, res) => {
     const token = req.headers.authorization;
 
@@ -354,4 +325,4 @@ const getClientInfo = async (req, res) => {
 };
 
 
-module.exports = { getClientInfo, removeStylePicture, getStylePictures, addStylePicture, getClientById, updateClient, deleteClient, authClient, getClientAppointments, updateClientProfilePicture, updateClientPreferredBarber };
+module.exports = { getClientInfo, removeStylePicture, getStylePictures, addStylePicture, getClientById, authClient, getClientAppointments, updateClientProfilePicture, updateClientPreferredBarber };

@@ -39,6 +39,3 @@ const WaitListSchema = new mongoose.Schema({
 });
 
 module.exports = mongoose.model("WaitList", WaitListSchema);
-
-
-

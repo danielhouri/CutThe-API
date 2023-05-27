@@ -39,27 +39,6 @@ const authBarber = async (req, res) => {
     }
 };
 
-// Create a new barber
-const createBarber = async (req, res) => {
-    try {
-        const barber = new Barber(req.body);
-        await barber.save();
-        res.status(201).send(barber);
-    } catch (err) {
-        res.status(400).send(err);
-    }
-};
-
-// Get all barbers
-const getAllBarbers = async (req, res) => {
-    try {
-        const barbers = await Barber.find();
-        res.send(barbers);
-    } catch (err) {
-        res.status(500).send(err);
-    }
-};
-
 // Get a single barber by ID
 const getBarberById = async (req, res) => {
     try {
@@ -75,38 +54,6 @@ const getBarberById = async (req, res) => {
                     }
                 });
 
-        if (!barber) {
-            res.status(404).send("Barber not found");
-        } else {
-            res.send(barber);
-        }
-    } catch (err) {
-        res.status(500).send(err);
-    }
-};
-
-
-// Update a barber by ID
-const updateBarber = async (req, res) => {
-    try {
-        const barber = await Barber.findByIdAndUpdate(req.params.id, req.body, {
-            new: true,
-            runValidators: true,
-        });
-        if (!barber) {
-            res.status(404).send("Barber not found");
-        } else {
-            res.send(barber);
-        }
-    } catch (err) {
-        res.status(400).send(err);
-    }
-};
-
-// Delete a barber by ID
-const deleteBarber = async (req, res) => {
-    try {
-        const barber = await Barber.findByIdAndDelete(req.params.id);
         if (!barber) {
             res.status(404).send("Barber not found");
         } else {
@@ -330,4 +277,4 @@ const setPreferredLocation = async (req, res) => {
 };
 
 
-module.exports = { setPreferredLocation, updatePaymentMethod, AddClientToBarber, removeClientFromBarber, removeClientFromBarber, getBarberClients, createBarber, getAllBarbers, getBarberById, updateBarber, deleteBarber, authBarber, getClosestBarber, getBarberBySearch };
+module.exports = { setPreferredLocation, updatePaymentMethod, AddClientToBarber, removeClientFromBarber, removeClientFromBarber, getBarberClients, getBarberById, authBarber, getClosestBarber, getBarberBySearch };
