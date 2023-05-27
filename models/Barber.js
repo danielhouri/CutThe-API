@@ -23,7 +23,7 @@ const BarberSchema = new mongoose.Schema({
     },
     phone_number: {
         type: String,
-        required: true,
+        default: '',
     },
     locations: [{
         type: mongoose.Schema.Types.ObjectId,
