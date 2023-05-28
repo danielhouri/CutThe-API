@@ -95,7 +95,6 @@ const getClosestBarber = async (req, res) => {
     }
 };
 
-
 const getBarberBySearch = async (req, res) => {
     try {
         const { city, country, lat, lon, store, home, cash, credit } = req.params;
@@ -106,7 +105,6 @@ const getBarberBySearch = async (req, res) => {
         res.status(500).json({ error: "Internal server error" });
     }
 };
-
 
 const getBarberClients = async (req, res) => {
     try {
@@ -276,5 +274,37 @@ const setPreferredLocation = async (req, res) => {
     }
 };
 
+const updateBarber = async (req, res) => {
+    try {
+        const token = req.headers.authorization;
+        const decodedToken = await tokenValidation(token);
 
-module.exports = { setPreferredLocation, updatePaymentMethod, AddClientToBarber, removeClientFromBarber, removeClientFromBarber, getBarberClients, getBarberById, authBarber, getClosestBarber, getBarberBySearch };
+        if (!decodedToken) {
+            res.status(401).json({ message: "Unauthorized" });
+            return;
+        }
+        const { email } = decodedToken;
+
+        let barber = await Barber.findOne({ email });
+        if (!barber) {
+            return res.status(401).json({ message: "Unauthorized" });
+        }
+
+        const { given_name, family_name, phone_number, name } = req.body;
+
+        // Update the barber's fields
+        barber.given_name = given_name;
+        barber.family_name = family_name;
+        barber.phone_number = phone_number;
+        barber.name = name;
+
+        await barber.save();
+
+        res.status(200).json({ message: "Barber updated successfully", barber });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: "Server error" });
+    }
+};
+
+module.exports = { updateBarber, setPreferredLocation, updatePaymentMethod, AddClientToBarber, removeClientFromBarber, removeClientFromBarber, getBarberClients, getBarberById, authBarber, getClosestBarber, getBarberBySearch };

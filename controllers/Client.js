@@ -4,7 +4,6 @@ const Barber = require("../models/Barber");
 const { tokenValidation } = require("../tools");
 
 const authClient = async (req, res) => {
-
     try {
         const token = req.headers.authorization;
         const decodedToken = await tokenValidation(token);
@@ -324,5 +323,38 @@ const getClientInfo = async (req, res) => {
     }
 };
 
+const updateClient = async (req, res) => {
+    try {
+        const token = req.headers.authorization;
+        const decodedToken = await tokenValidation(token);
 
-module.exports = { getClientInfo, removeStylePicture, getStylePictures, addStylePicture, getClientById, authClient, getClientAppointments, updateClientProfilePicture, updateClientPreferredBarber };
+        if (!decodedToken) {
+            res.status(401).json({ message: "Unauthorized" });
+            return;
+        }
+        const { email } = decodedToken;
+
+        let client = await Client.findOne({ email });
+        if (!client) {
+            return res.status(401).json({ message: "Unauthorized" });
+        }
+
+        const { given_name, family_name, phone_number, name } = req.body;
+        console.log(given_name)
+        // Update the client's fields
+        client.given_name = given_name;
+        client.family_name = family_name;
+        client.phone_number = phone_number;
+        client.name = name;
+
+        await client.save();
+
+        res.status(200).json({ message: "Client updated successfully", client });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: "Server error" });
+    }
+};
+
+
+module.exports = { updateClient, getClientInfo, removeStylePicture, getStylePictures, addStylePicture, getClientById, authClient, getClientAppointments, updateClientProfilePicture, updateClientPreferredBarber };

@@ -1,5 +1,5 @@
-const { getClientInfo, removeStylePicture, getStylePictures, addStylePicture, getClientById, authClient, getClientAppointments, updateClientProfilePicture, updateClientPreferredBarber } = require("./controllers/Client");
-const { setPreferredLocation, updatePaymentMethod, AddClientToBarber, removeClientFromBarber, getBarberClients, getBarberById, authBarber, getClosestBarber, getBarberBySearch } = require("./controllers/Barber");
+const { updateClient, getClientInfo, removeStylePicture, getStylePictures, addStylePicture, getClientById, authClient, getClientAppointments, updateClientProfilePicture, updateClientPreferredBarber } = require("./controllers/Client");
+const { updateBarber, setPreferredLocation, updatePaymentMethod, AddClientToBarber, removeClientFromBarber, getBarberClients, getBarberById, authBarber, getClosestBarber, getBarberBySearch } = require("./controllers/Barber");
 const { createLocation, getAllLocations, updateLocation, deleteLocation, getBarberLocations } = require("./controllers/Location");
 const { getServicesByToken, createService, getServiceById, updateService, deleteService, getServicesByBarberId } = require("./controllers/Service");
 const { createSlot, getAllSlots, getSlotById, updateSlot, deleteSlot, getSlotsByBarberAndLocation } = require("./controllers/Slot");
@@ -17,6 +17,7 @@ router.post("/barbers/auth", authBarber);
 
 // Client routes
 router.get("/clients", getClientById);
+router.put("/clients", updateClient);
 router.get("/clients/appointments", getClientAppointments);
 router.post("/clients/ProfilePicture", updateClientProfilePicture);
 router.post("/clients/PreferredBarber", updateClientPreferredBarber);
@@ -27,6 +28,7 @@ router.get("/clients/info/:id", getClientInfo);
 
 // Barber routes
 router.get("/barbers/:id", getBarberById);
+router.put("/barbers", updateBarber);
 router.get("/barbers/closest/:city/:country/:lat/:lon", getClosestBarber);
 router.get("/barbers/search/:city/:country/:lat/:lon/:store/:home/:cash/:credit", getBarberBySearch);
 router.get("/barbers/clients/get", getBarberClients);

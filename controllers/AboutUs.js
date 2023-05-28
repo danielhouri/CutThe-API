@@ -57,7 +57,6 @@ const updateAboutUsById = async (req, res) => {
 };
 
 
-
 const getAboutUsByBarberId = async (req, res) => {
     const { id } = req.params;
     try {
