@@ -6,7 +6,7 @@ const Barber = require("../models/Barber");
 const Client = require("../models/Client");
 const Location = require("../models/Location");
 
-const { findClosestBarbers, tokenValidation, searchBarber } = require('../tools');
+const { findClosestBarbers, tokenValidation, searchBarber, getNumberOfAppointmentsToday, getNumberOfProductsPurchasedToday, getNumberOfCancelledAppointments, getNextAppointments, getNumberOfCompletedAppointmentsToday, getNumberOfAppointmentsPastWeek, getEstimatedRevenue, getTotalBookedHours } = require('../tools');
 
 const authBarber = async (req, res) => {
     try {
@@ -307,4 +307,37 @@ const updateBarber = async (req, res) => {
     }
 };
 
-module.exports = { updateBarber, setPreferredLocation, updatePaymentMethod, AddClientToBarber, removeClientFromBarber, removeClientFromBarber, getBarberClients, getBarberById, authBarber, getClosestBarber, getBarberBySearch };
+
+const getInfoForBarber = async (req, res) => {
+    try {
+        const token = req.headers.authorization;
+        const decodedToken = await tokenValidation(token);
+
+        if (!decodedToken) {
+            res.status(401).json({ message: "Unauthorized" });
+            return;
+        }
+        const { email } = decodedToken;
+
+        let barber = await Barber.findOne({ email });
+        if (!barber) {
+            return res.status(401).json({ message: "Unauthorized" });
+        }
+
+        const numberOfAppointmentsToday = await getNumberOfAppointmentsToday(barber._id);
+        const numberOfProductsPurchasedToday = await getNumberOfProductsPurchasedToday(barber._id);
+        const numberOfCancelledAppointments = await getNumberOfCancelledAppointments(barber._id);
+        const nextAppointments = await getNextAppointments(barber._id);
+        const numberOfCompletedAppointmentsToday = await getNumberOfCompletedAppointmentsToday(barber._id);
+        const numberOfAppointmentsPastWeek = await getNumberOfAppointmentsPastWeek(barber._id);
+        const estimatedRevenue = await getEstimatedRevenue(barber._id);
+        const totalBookedHours = await getTotalBookedHours(barber._id);
+
+        res.status(200).json({ totalBookedHours, estimatedRevenue, numberOfAppointmentsPastWeek, numberOfAppointmentsPastWeek, numberOfCompletedAppointmentsToday, nextAppointments, numberOfAppointmentsToday, numberOfProductsPurchasedToday, numberOfCancelledAppointments });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: "Server error" });
+    }
+};
+
+module.exports = { getInfoForBarber, updateBarber, setPreferredLocation, updatePaymentMethod, AddClientToBarber, removeClientFromBarber, removeClientFromBarber, getBarberClients, getBarberById, authBarber, getClosestBarber, getBarberBySearch };

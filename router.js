@@ -1,5 +1,5 @@
 const { updateClient, getClientInfo, removeStylePicture, getStylePictures, addStylePicture, getClientById, authClient, getClientAppointments, updateClientProfilePicture, updateClientPreferredBarber } = require("./controllers/Client");
-const { updateBarber, setPreferredLocation, updatePaymentMethod, AddClientToBarber, removeClientFromBarber, getBarberClients, getBarberById, authBarber, getClosestBarber, getBarberBySearch } = require("./controllers/Barber");
+const { getInfoForBarber, updateBarber, setPreferredLocation, updatePaymentMethod, AddClientToBarber, removeClientFromBarber, getBarberClients, getBarberById, authBarber, getClosestBarber, getBarberBySearch } = require("./controllers/Barber");
 const { createLocation, getAllLocations, updateLocation, deleteLocation, getBarberLocations } = require("./controllers/Location");
 const { getServicesByToken, createService, getServiceById, updateService, deleteService, getServicesByBarberId } = require("./controllers/Service");
 const { createSlot, getAllSlots, getSlotById, updateSlot, deleteSlot, getSlotsByBarberAndLocation } = require("./controllers/Slot");
@@ -36,6 +36,7 @@ router.delete("/barbers/clients/:id", removeClientFromBarber);
 router.post("/barbers/clients/new", AddClientToBarber);
 router.put("/barbers/PaymentMethod/:type", updatePaymentMethod);
 router.put("/barbers/PreferredLocation/:locationId", setPreferredLocation);
+router.get("/barbers", getInfoForBarber);
 
 // Location routes
 router.get("/locations", getAllLocations);

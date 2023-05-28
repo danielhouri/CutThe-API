@@ -345,4 +345,162 @@ async function findWaitListAppointment(barberId, name, locationId, date) {
     }
 }
 
-module.exports = { findWaitListAppointment, tokenValidation, getAvailableSlots, findClosestBarbers, searchBarber, sendNotification };
+
+const getNumberOfAppointmentsToday = async (barberId) => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // Set time to the beginning of the day
+
+    const count = await Appointment.countDocuments({
+        barber: barberId,
+        start_time: { $gte: today },
+        end_time: { $lte: new Date() }
+    });
+
+    return count;
+};
+
+const getNumberOfProductsPurchasedToday = async (barberId) => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // Set time to the beginning of the day
+
+    const count = await Appointment.aggregate([
+        { $match: { barber: barberId, start_time: { $gte: today }, end_time: { $lte: new Date() } } },
+        { $unwind: "$ordered_products" },
+        { $group: { _id: null, count: { $sum: "$ordered_products.quantity" } } }
+    ]);
+
+    return count.length > 0 ? count[0].count : 0;
+};
+
+const getNumberOfCancelledAppointments = async (barberId) => {
+    const count = await Appointment.countDocuments({ barber: barberId, status: true });
+    return count;
+};
+
+const getNextAppointments = async (barberId) => {
+    const appointments = await Appointment.find({ barber: barberId, start_time: { $gte: new Date() } })
+        .sort({ start_time: 1 })
+        .limit(10)
+        .populate("barber", "name profilePicture")
+        .populate("location", "name");
+
+    return appointments;
+};
+
+const getNumberOfCompletedAppointmentsToday = async (barberId) => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // Set time to the beginning of the day
+
+    const count = await Appointment.countDocuments({
+        barber: barberId,
+        start_time: { $gte: today },
+        end_time: { $lte: new Date() },
+        status: true
+    });
+
+    return count;
+};
+
+const getNumberOfAppointmentsPastWeek = async (barberId) => {
+    const weekAgo = new Date();
+    weekAgo.setDate(weekAgo.getDate() - 7);
+    weekAgo.setHours(0, 0, 0, 0); // Set time to the beginning of the day
+
+    const count = await Appointment.countDocuments({
+        barber: barberId,
+        start_time: { $gte: weekAgo, $lte: new Date() }
+    });
+
+    return count;
+};
+
+const getEstimatedRevenue = async (barberId) => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // Set time to the beginning of the day
+
+    const revenueToday = await Appointment.aggregate([
+        { $match: { barber: barberId, start_time: { $gte: today }, end_time: { $lte: new Date() } } },
+        { $group: { _id: null, revenue: { $sum: "$price" } } }
+    ]);
+
+    const weekAgo = new Date();
+    weekAgo.setDate(weekAgo.getDate() - 7);
+    weekAgo.setHours(0, 0, 0, 0); // Set time to the beginning of the day
+
+    const revenuePastWeek = await Appointment.aggregate([
+        { $match: { barber: barberId, start_time: { $gte: weekAgo, $lte: today } } },
+        { $group: { _id: null, revenue: { $sum: "$price" } } }
+    ]);
+
+    return {
+        today: revenueToday.length > 0 ? revenueToday[0].revenue : 0,
+        pastWeek: revenuePastWeek.length > 0 ? revenuePastWeek[0].revenue : 0
+    };
+};
+
+const getTotalBookedHours = async (barberId) => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // Set time to the beginning of the day
+
+    const bookedHoursToday = await Appointment.aggregate([
+        { $match: { barber: barberId, start_time: { $gte: today }, end_time: { $lte: new Date() } } },
+        {
+            $group: {
+                _id: null,
+                bookedHours: {
+                    $sum: { $divide: [{ $subtract: ["$end_time", "$start_time"] }, 1000 * 60 * 60] }
+                }
+            }
+        }
+    ]);
+
+    const weekAgo = new Date();
+    weekAgo.setDate(weekAgo.getDate() - 7);
+    weekAgo.setHours(0, 0, 0, 0); // Set time to the beginning of the day
+
+    const bookedHoursPastWeek = await Appointment.aggregate([
+        { $match: { barber: barberId, start_time: { $gte: weekAgo, $lte: today } } },
+        {
+            $group: {
+                _id: null,
+                bookedHours: {
+                    $sum: { $divide: [{ $subtract: ["$end_time", "$start_time"] }, 1000 * 60 * 60] }
+                }
+            }
+        }
+    ]);
+
+    const slotHoursToday = await Slot.aggregate([
+        { $match: { barber: barberId, start_time: { $gte: today }, end_time: { $lte: new Date() } } },
+        {
+            $group: {
+                _id: null,
+                slotHours: {
+                    $sum: { $divide: [{ $subtract: ["$end_time", "$start_time"] }, 1000 * 60 * 60] }
+                }
+            }
+        }
+    ]);
+
+    const slotHoursPastWeek = await Slot.aggregate([
+        { $match: { barber: barberId, start_time: { $gte: weekAgo, $lte: today } } },
+        {
+            $group: {
+                _id: null,
+                slotHours: {
+                    $sum: { $divide: [{ $subtract: ["$end_time", "$start_time"] }, 1000 * 60 * 60] }
+                }
+            }
+        }
+    ]);
+
+    return {
+        bookedHoursToday: bookedHoursToday.length > 0 ? bookedHoursToday[0].bookedHours : 0,
+        bookedHoursPastWeek: bookedHoursPastWeek.length > 0 ? bookedHoursPastWeek[0].bookedHours : 0,
+        slotHoursToday: slotHoursToday.length > 0 ? slotHoursToday[0].slotHours : 0,
+        slotHoursPastWeek: slotHoursPastWeek.length > 0 ? slotHoursPastWeek[0].slotHours : 0
+    };
+};
+
+
+module.exports = { getTotalBookedHours, getEstimatedRevenue, getNumberOfAppointmentsPastWeek, getNumberOfCompletedAppointmentsToday, getNextAppointments, getNumberOfCancelledAppointments, getNumberOfProductsPurchasedToday, getNumberOfAppointmentsToday, findWaitListAppointment, tokenValidation, getAvailableSlots, findClosestBarbers, searchBarber, sendNotification };
