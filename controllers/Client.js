@@ -291,7 +291,7 @@ const getClientInfo = async (req, res) => {
         const clientId = req.params.id;
 
         const client = await Client.findById(clientId)
-            .select('name profilePicture email')
+            .select('name profilePicture email phone_number')
             .populate({
                 path: 'appointments',
                 match: { barber: barber._id },
@@ -313,7 +313,8 @@ const getClientInfo = async (req, res) => {
             name: client.name,
             profilePicture: client.profilePicture,
             email: client.email,
-            appointments: client.appointments
+            appointments: client.appointments,
+            phone_number: client.phone_number
         };
 
         res.status(200).json(new_client);

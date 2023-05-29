@@ -118,7 +118,7 @@ const getBarberClients = async (req, res) => {
 
         const barber = await Barber.findOne({ email }).populate({
             path: 'clients',
-            select: 'name profilePicture email'
+            select: 'name profilePicture email phone_number'
         });
 
         if (!barber) {

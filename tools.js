@@ -295,7 +295,7 @@ async function sendNotification(token, name, payload) {
     const message = {
         token: token,
         notification: {
-            body: JSON.stringify(payload),
+            body: payload,
             title: name,
         },
     };
@@ -345,26 +345,32 @@ async function findWaitListAppointment(barberId, name, locationId, date) {
     }
 }
 
-
 const getNumberOfAppointmentsToday = async (barberId) => {
     const today = new Date();
     today.setHours(0, 0, 0, 0); // Set time to the beginning of the day
 
+    const endOfDay = new Date(today);
+    endOfDay.setHours(23, 59, 59, 999); // Set time to the end of the day
+
     const count = await Appointment.countDocuments({
         barber: barberId,
         start_time: { $gte: today },
-        end_time: { $lte: new Date() }
+        end_time: { $lte: endOfDay }
     });
 
     return count;
 };
 
+
 const getNumberOfProductsPurchasedToday = async (barberId) => {
     const today = new Date();
     today.setHours(0, 0, 0, 0); // Set time to the beginning of the day
 
+    const endOfDay = new Date();
+    endOfDay.setHours(23, 59, 59, 999); // Set time to the end of the day
+
     const count = await Appointment.aggregate([
-        { $match: { barber: barberId, start_time: { $gte: today }, end_time: { $lte: new Date() } } },
+        { $match: { barber: barberId, start_time: { $gte: today, $lte: endOfDay } } },
         { $unwind: "$ordered_products" },
         { $group: { _id: null, count: { $sum: "$ordered_products.quantity" } } }
     ]);
@@ -373,12 +379,31 @@ const getNumberOfProductsPurchasedToday = async (barberId) => {
 };
 
 const getNumberOfCancelledAppointments = async (barberId) => {
-    const count = await Appointment.countDocuments({ barber: barberId, status: true });
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const tomorrow = new Date(today);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+
+    const count = await Appointment.countDocuments({
+        barber: barberId,
+        status: true,
+        start_time: { $gte: today, $lt: tomorrow }
+    });
+
     return count;
 };
 
+
 const getNextAppointments = async (barberId) => {
-    const appointments = await Appointment.find({ barber: barberId, start_time: { $gte: new Date() } })
+    // Get today's date
+    const today = new Date();
+    // Set the end time of today by setting hours, minutes, seconds, and milliseconds to 0
+    const endOfDay = new Date(today.getFullYear(), today.getMonth(), today.getDate(), 23, 59, 59, 999);
+
+    const appointments = await Appointment.find({
+        barber: barberId,
+        start_time: { $gte: today, $lte: endOfDay }
+    })
         .sort({ start_time: 1 })
         .limit(10)
         .populate("barber", "name profilePicture")
@@ -386,6 +411,7 @@ const getNextAppointments = async (barberId) => {
 
     return appointments;
 };
+
 
 const getNumberOfCompletedAppointmentsToday = async (barberId) => {
     const today = new Date();
@@ -402,13 +428,16 @@ const getNumberOfCompletedAppointmentsToday = async (barberId) => {
 };
 
 const getNumberOfAppointmentsPastWeek = async (barberId) => {
-    const weekAgo = new Date();
-    weekAgo.setDate(weekAgo.getDate() - 7);
+    const today = new Date();
+    const weekAgo = new Date(today); // Create a new date object for the current day
+    weekAgo.setDate(weekAgo.getDate() - 7); // Subtract 7 days from the current day
     weekAgo.setHours(0, 0, 0, 0); // Set time to the beginning of the day
+    const endOfDay = new Date(weekAgo); // Create a new date object for the weekAgo day
+    endOfDay.setHours(23, 59, 59, 999); // Set time to the end of the day
 
     const count = await Appointment.countDocuments({
         barber: barberId,
-        start_time: { $gte: weekAgo, $lte: new Date() }
+        start_time: { $gte: weekAgo, $lte: endOfDay }
     });
 
     return count;
@@ -418,17 +447,22 @@ const getEstimatedRevenue = async (barberId) => {
     const today = new Date();
     today.setHours(0, 0, 0, 0); // Set time to the beginning of the day
 
+    const endOfDay = new Date(today); // Create a new date object for the current day
+    endOfDay.setHours(23, 59, 59, 999); // Set time to the end of the day
+
     const revenueToday = await Appointment.aggregate([
-        { $match: { barber: barberId, start_time: { $gte: today }, end_time: { $lte: new Date() } } },
+        { $match: { barber: barberId, start_time: { $gte: today, $lte: endOfDay } } },
         { $group: { _id: null, revenue: { $sum: "$price" } } }
     ]);
 
     const weekAgo = new Date();
     weekAgo.setDate(weekAgo.getDate() - 7);
     weekAgo.setHours(0, 0, 0, 0); // Set time to the beginning of the day
+    const endOfLastDay = new Date(weekAgo); // Create a new date object for the weekAgo day
+    endOfDay.setHours(23, 59, 59, 999); // Set time to the end of the day
 
     const revenuePastWeek = await Appointment.aggregate([
-        { $match: { barber: barberId, start_time: { $gte: weekAgo, $lte: today } } },
+        { $match: { barber: barberId, start_time: { $gte: weekAgo, $lte: endOfLastDay } } },
         { $group: { _id: null, revenue: { $sum: "$price" } } }
     ]);
 
@@ -438,12 +472,16 @@ const getEstimatedRevenue = async (barberId) => {
     };
 };
 
+
 const getTotalBookedHours = async (barberId) => {
     const today = new Date();
     today.setHours(0, 0, 0, 0); // Set time to the beginning of the day
+    const endOfDay = new Date(today); // Create a new date object for the current day
+    endOfDay.setHours(23, 59, 59, 999); // Set time to the end of the day
+
 
     const bookedHoursToday = await Appointment.aggregate([
-        { $match: { barber: barberId, start_time: { $gte: today }, end_time: { $lte: new Date() } } },
+        { $match: { barber: barberId, start_time: { $gte: today }, end_time: { $lte: endOfDay } } },
         {
             $group: {
                 _id: null,
@@ -457,9 +495,11 @@ const getTotalBookedHours = async (barberId) => {
     const weekAgo = new Date();
     weekAgo.setDate(weekAgo.getDate() - 7);
     weekAgo.setHours(0, 0, 0, 0); // Set time to the beginning of the day
+    const endOfLastDay = new Date(weekAgo); // Create a new date object for the weekAgo day
+    endOfDay.setHours(23, 59, 59, 999); // Set time to the end of the day
 
     const bookedHoursPastWeek = await Appointment.aggregate([
-        { $match: { barber: barberId, start_time: { $gte: weekAgo, $lte: today } } },
+        { $match: { barber: barberId, start_time: { $gte: weekAgo, $lte: endOfLastDay } } },
         {
             $group: {
                 _id: null,
@@ -471,7 +511,7 @@ const getTotalBookedHours = async (barberId) => {
     ]);
 
     const slotHoursToday = await Slot.aggregate([
-        { $match: { barber: barberId, start_time: { $gte: today }, end_time: { $lte: new Date() } } },
+        { $match: { barber: barberId, start_time: { $gte: today }, end_time: { $lte: endOfDay } } },
         {
             $group: {
                 _id: null,
@@ -483,7 +523,7 @@ const getTotalBookedHours = async (barberId) => {
     ]);
 
     const slotHoursPastWeek = await Slot.aggregate([
-        { $match: { barber: barberId, start_time: { $gte: weekAgo, $lte: today } } },
+        { $match: { barber: barberId, start_time: { $gte: weekAgo, $lte: endOfLastDay } } },
         {
             $group: {
                 _id: null,
@@ -502,5 +542,71 @@ const getTotalBookedHours = async (barberId) => {
     };
 };
 
+const messageTranslate = (code, name, payload, language) => {
+    try {
+        let notification = { title: '', body: '' };
 
-module.exports = { getTotalBookedHours, getEstimatedRevenue, getNumberOfAppointmentsPastWeek, getNumberOfCompletedAppointmentsToday, getNextAppointments, getNumberOfCancelledAppointments, getNumberOfProductsPurchasedToday, getNumberOfAppointmentsToday, findWaitListAppointment, tokenValidation, getAvailableSlots, findClosestBarbers, searchBarber, sendNotification };
+        // Hebrew
+        if (language == 'he') {
+            // Cancel appointment
+            if (code == 0) {
+                const { date, time } = payload;
+                notification.title = "ביטול תור"
+                notification.body = 'התור שנקבע עם ' + { name } + ' בתאריך ' + { date } + ' בשעה ' + { time } + ' בוטל.';
+            }
+            // Edit appoinement
+            else if (code == 1) {
+                const { date, time } = payload;
+                notification.title = "עדכון תור"
+                notification.body = 'עודכן התור שנקבע לך עם ' + { name } + ' בתאריך ' + { date } + ' לשעה ' + { time } + '.';
+            }
+            // Free Slot
+            else if (code == 2) {
+                const { date } = payload;
+                notification.title = "תור פנוי"
+                notification.body = 'ביקשת שנזכיר לך אם מתפנה תור לתאריך ' + { date } + ' עם ' + { name } + ', מוזמן להיכנס לאפליקציה לקבוע תור מחדש.';
+            }
+            // New Appointment
+            else if (code == 4) {
+                const { date, time } = payload;
+                notification.title = "תור חדש"
+                notification.body = 'נקבע תור חדש עם ' + { name } + ' בתאריך ' + { date } + ' בשעה ' + { time } + '.';
+            }
+        }
+        // English
+        else {
+            // Cancel appointment
+            if (code == 0) {
+                const { date, time } = payload;
+                notification.title = "Appointment Cancellation";
+                notification.body = `The appointment scheduled with ${name} on ${date} at ${time} has been canceled.`;
+            }
+            // Edit appoinement
+            else if (code == 1) {
+                const { date, time } = payload;
+                notification.title = "Appointment Update";
+                notification.body = `Your appointment with ${name} on ${date} at ${time} has been updated.`;
+            }
+            // Free Slot
+            else if (code == 2) {
+                const { date } = payload;
+                notification.title = "Available Slot";
+                notification.body = `You requested to be notified if a slot becomes available on ${date} with ${name}. Feel free to log in to the application to reschedule your appointment.`;
+            }
+            // New Appointment
+            else if (code == 4) {
+                const { date, time } = payload;
+                notification.title = "New Appointment";
+                notification.body = `A new appointment has been scheduled with ${name} on ${date} at ${time}.`;
+            }
+        }
+
+        return notification;
+    }
+    catch (err) {
+        console.log(err);
+    }
+}
+
+
+module.exports = { messageTranslate, getTotalBookedHours, getEstimatedRevenue, getNumberOfAppointmentsPastWeek, getNumberOfCompletedAppointmentsToday, getNextAppointments, getNumberOfCancelledAppointments, getNumberOfProductsPurchasedToday, getNumberOfAppointmentsToday, findWaitListAppointment, tokenValidation, getAvailableSlots, findClosestBarbers, searchBarber, sendNotification };
