@@ -1,5 +1,7 @@
 const Location = require("../models/Location");
 const Barber = require("../models/Barber");
+const Slot = require("../models/Slot");
+const Appointment = require("../models/Appointment");
 
 const { tokenValidation } = require("../tools");
 
@@ -138,6 +140,12 @@ const deleteLocation = async (req, res) => {
             barber.preferred_location = undefined;
             await barber.save();
         }
+
+        // Remove all slots related to the deleted location
+        await Slot.deleteMany({ location: location._id });
+
+        // Remove all appointments related to the deleted location
+        await Appointment.deleteMany({ location: location._id });
 
         res.send(location);
     } catch (err) {
