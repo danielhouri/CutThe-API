@@ -8,7 +8,7 @@ const { deleteAboutUsImage, updateAboutUsText, updateAboutUsImageList, createAbo
 const { createComment, getAllComments, getCommentById, updateCommentById, deleteCommentById, getCommentsByBarberId, createCommentByClient } = require("./controllers/Comment");
 const { getProductsByToken, createProduct, getProductById, updateProduct, deleteProduct, getProductsByBarberId } = require("./controllers/Product");
 const { createWaitlistByClient } = require("./controllers/WaitList");
-const { BarberSendNotification, createNotification, getAllNotifications, getNotificationById, updateNotification, deleteNotification } = require("./controllers/Notification");
+const { BarberSendNotification, getAllNotifications } = require("./controllers/Notification");
 
 const router = require("express").Router();
 
@@ -102,12 +102,7 @@ router.get('/products/barber/:barberId', getProductsByBarberId);
 router.post("/Watchlist", createWaitlistByClient);
 
 // Notification routes
-router.post('/notifications', createNotification);
 router.get('/notifications', getAllNotifications);
-router.get('/notifications/:id', getNotificationById);
-router.put('/notifications/:id', updateNotification);
-router.delete('/notifications/:id', deleteNotification);
-router.put('/notifications', BarberSendNotification);
-
+router.post('/notifications', BarberSendNotification);
 
 module.exports = router;

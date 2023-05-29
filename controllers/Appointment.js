@@ -68,7 +68,7 @@ const createAppointmentByClient = async (req, res) => {
         const notification = messageTranslate(4, client.name, { date: date, time: time }, 'en');
 
         for (const messagingToken of barber.messaging_token) {
-            await sendNotification(messagingToken, notification.title, notification.body);
+            await sendNotification(messagingToken, notification.title, notification.body, client._id, barberId);
         }
 
         res.status(201).send(appointment);
@@ -243,12 +243,12 @@ const cancelAppointment = async (req, res) => {
         if (appointment.client.email == email) {
             // Notify barber
             for (const messagingToken of appointment.barber.messaging_token) {
-                await sendNotification(messagingToken, notification.title, notification.body);
+                await sendNotification(messagingToken, notification.title, notification.body, appointment.client._id, appointment.barber._id);
             }
         } else {
             // Notify client
             for (const messagingToken of appointment.client.messaging_token) {
-                await sendNotification(messagingToken, notification.title, notification.body);
+                await sendNotification(messagingToken, notification.title, notification.body, appointment.client._id, appointment.barber._id);
             }
         }
 
@@ -367,7 +367,7 @@ const createAppointmentByBarber = async (req, res) => {
         const time = moment(start_time).format('HH:mm');
         const notification = messageTranslate(4, client.name, { date: date, time: time }, 'en');
         for (const messagingToken of client.messaging_token) {
-            await sendNotification(messagingToken, notification.title, notification.body);
+            await sendNotification(messagingToken, notification.title, notification.body, clientId, barber._id);
         }
 
         res.status(201).send(appointment);

@@ -6,6 +6,7 @@ const Appointment = require("./models/Appointment");
 const Location = require('./models/Location');
 const Comment = require('./models/Comment');
 const WaitList = require("./models/WaitList");
+const Notification = require("./models/Notification");
 const geolib = require('geolib');
 const moment = require('moment/moment');
 
@@ -290,8 +291,7 @@ async function searchBarber(city, country, lat, lon, store, home, cash, credit) 
     return results;
 }
 
-async function sendNotification(token, name, payload) {
-    console.log(payload)
+async function sendNotification(token, name, payload, clientId, barberId) {
     const message = {
         token: token,
         notification: {
@@ -307,6 +307,17 @@ async function sendNotification(token, name, payload) {
         .catch(error => {
             console.log('Error sending message:', error);
         });
+
+    const notification = new Notification({
+        client: clientId,
+        barber: barberId,
+        message: payload,
+        title: name,
+        createdAt: new Date()
+    });
+
+    const savedNotification = await notification.save();
+    console.log('New notification created:', savedNotification);
 }
 
 async function findWaitListAppointment(barberId, name, locationId, date) {
@@ -331,13 +342,14 @@ async function findWaitListAppointment(barberId, name, locationId, date) {
     }).populate("client", "messaging_token name");
 
     // Send notifications to all waiting list clients
+    const dateT = moment(start_time).format('DD/MM/YYYY')
     for (const waitingListClient of waitingListClients) {
         const { client } = waitingListClient;
+        const notification = messageTranslate(2, name, { date: dateT, time: time }, 'en');
 
         for (const token of client.messaging_token) {
             // Send notification to the waiting list client
-            const date = moment(start_time).format('DD/MM/YYYY')
-            await sendNotification(token, name, { code: 2, payload: { date: date } });
+            await sendNotification(token, notification.title, notification.body, client._id, barberId);
         }
 
         // Remove the waiting list client

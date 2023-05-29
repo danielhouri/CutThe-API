@@ -2,7 +2,7 @@ const Notification = require("../models/Notification");
 const Client = require("../models/Client");
 const Barber = require("../models/Barber");
 
-const { tokenValidation, sendNotification, messageTranslate } = require("../tools");
+const { tokenValidation, sendNotification } = require("../tools");
 
 // Create a new notification
 const createNotification = async (req, res) => {
@@ -33,8 +33,8 @@ const getAllNotifications = async (req, res) => {
             return;
         }
 
-        const notifications = await Notification.find({ client: client._id }).populate('client barber');
-        console.log(notifications)
+        const notifications = await Notification.find({ client: client._id });
+
         res.send(notifications);
     } catch (err) {
         res.status(500).send(err);
@@ -102,9 +102,6 @@ const BarberSendNotification = async (req, res) => {
         }
 
         const { clientList, title, body } = req.body;
-        console.log(clientList)
-        console.log(title)
-        console.log(body)
 
         for (let clientId of clientList) {
             const client = await Client.findById(clientId);
@@ -113,10 +110,10 @@ const BarberSendNotification = async (req, res) => {
                 return;
             }
             for (messageToken of client.messaging_token) {
-                sendNotification(messageToken, title, body);
+                sendNotification(messageToken, title, body, client._id, barber._id);
             }
         }
-    
+
 
         res.send();
     } catch (err) {
