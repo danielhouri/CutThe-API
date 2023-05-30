@@ -33,7 +33,7 @@ const getAllNotifications = async (req, res) => {
             return;
         }
 
-        const notifications = await Notification.find({ client: client._id });
+        const notifications = await Notification.find({ client: client._id }).sort({ createdAt: -1 });;
 
         res.send(notifications);
     } catch (err) {

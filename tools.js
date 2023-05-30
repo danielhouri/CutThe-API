@@ -342,15 +342,11 @@ async function findWaitListAppointment(barberId, name, locationId, date) {
     }).populate("client", "messaging_token name");
 
     // Send notifications to all waiting list clients
-    const dateT = moment(start_time).format('DD/MM/YYYY')
+    const dateT = moment(date).format('DD/MM/YYYY')
     for (const waitingListClient of waitingListClients) {
         const { client } = waitingListClient;
         const notification = messageTranslate(2, name, { date: dateT, time: time }, 'en');
-
-        for (const token of client.messaging_token) {
-            // Send notification to the waiting list client
-            await sendNotification(token, notification.title, notification.body, client._id, barberId);
-        }
+        sendToManyNotification(client.messaging_token, notification, client._id, barberId);
 
         // Remove the waiting list client
         await WaitList.deleteOne({ _id: waitingListClient._id });
@@ -433,7 +429,7 @@ const getNumberOfCompletedAppointmentsToday = async (barberId) => {
         barber: barberId,
         start_time: { $gte: today },
         end_time: { $lte: new Date() },
-        status: true
+        status: false
     });
 
     return count;
@@ -555,9 +551,8 @@ const getTotalBookedHours = async (barberId) => {
 };
 
 const messageTranslate = (code, name, payload, language) => {
+    let notification = { title: '', body: '' };
     try {
-        let notification = { title: '', body: '' };
-
         // Hebrew
         if (language == 'he') {
             // Cancel appointment
@@ -583,6 +578,12 @@ const messageTranslate = (code, name, payload, language) => {
                 const { date, time } = payload;
                 notification.title = "תור חדש"
                 notification.body = 'נקבע תור חדש עם ' + { name } + ' בתאריך ' + { date } + ' בשעה ' + { time } + '.';
+            }
+            // Appointment Remeinder
+            else if (code == 5) {
+                const { date, time } = payload;
+                notification.title = "תזכורת לתור"
+                notification.body = 'זוהי תזכורת עבור תור שנקבע עבורך עם ' + { name } + 'בתאריך ' + { date } + ' ובשעה ' + { time } + '.';
             }
         }
         // English
@@ -611,6 +612,12 @@ const messageTranslate = (code, name, payload, language) => {
                 notification.title = "New Appointment";
                 notification.body = `A new appointment has been scheduled with ${name} on ${date} at ${time}.`;
             }
+            // Appointment Remeinder
+            else if (code == 5) {
+                const { date, time } = payload;
+                notification.title = "Appointment Reminder"
+                notification.body = `This is a reminder for your appointment scheduled with ${name} on ${date} at ${time}.`
+            }
         }
 
         return notification;
@@ -620,5 +627,10 @@ const messageTranslate = (code, name, payload, language) => {
     }
 }
 
+const sendToManyNotification = async (tokens, notification, clientId, barberId) => {
+    for (let token of tokens) {
+        sendNotification(token, notification.title, notification.body, clientId, barberId);
+    }
+}
 
-module.exports = { messageTranslate, getTotalBookedHours, getEstimatedRevenue, getNumberOfAppointmentsPastWeek, getNumberOfCompletedAppointmentsToday, getNextAppointments, getNumberOfCancelledAppointments, getNumberOfProductsPurchasedToday, getNumberOfAppointmentsToday, findWaitListAppointment, tokenValidation, getAvailableSlots, findClosestBarbers, searchBarber, sendNotification };
+module.exports = { sendToManyNotification, messageTranslate, getTotalBookedHours, getEstimatedRevenue, getNumberOfAppointmentsPastWeek, getNumberOfCompletedAppointmentsToday, getNextAppointments, getNumberOfCancelledAppointments, getNumberOfProductsPurchasedToday, getNumberOfAppointmentsToday, findWaitListAppointment, tokenValidation, getAvailableSlots, findClosestBarbers, searchBarber, sendNotification };

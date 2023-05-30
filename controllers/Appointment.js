@@ -3,8 +3,9 @@ const Client = require("../models/Client");
 const Barber = require("../models/Barber");
 const Product = require("../models/Product");
 const moment = require('moment/moment');
+const schedule = require('node-schedule');
 
-const { tokenValidation, sendNotification, findWaitListAppointment, messageTranslate } = require("../tools");
+const { sendToManyNotification, tokenValidation, sendNotification, findWaitListAppointment, messageTranslate } = require("../tools");
 
 // Create a new appointment
 const createAppointmentByClient = async (req, res) => {
@@ -62,14 +63,19 @@ const createAppointmentByClient = async (req, res) => {
             { $push: { appointments: savedAppointment._id } }
         );
 
-        // Send notifications to all messaging_token values
+        // Send notifications to the barber
         const date = moment(start_time).format('DD/MM/YYYY')
         const time = moment(start_time).format('HH:mm')
         const notification = messageTranslate(4, client.name, { date: date, time: time }, 'en');
+        sendToManyNotification(barber.messaging_token, notification, client._id, barberId);
 
-        for (const messagingToken of barber.messaging_token) {
-            await sendNotification(messagingToken, notification.title, notification.body, client._id, barberId);
-        }
+        // Schedule reminder for client 
+        const notificationReminder = messageTranslate(5, client.name, { date: date, time: time }, 'en');
+        const timeNotification = new Date(start_time);
+        timeNotification.setMinutes(timeNotification.getMinutes() - 60);
+        schedule.scheduleJob(String(savedAppointment._id), timeNotification, () => {
+            sendToManyNotification(client.messaging_token, notificationReminder, client._id, barberId);
+        });
 
         res.status(201).send(appointment);
     } catch (err) {
@@ -183,6 +189,9 @@ const deleteAppointment = async (req, res) => {
 
         await Appointment.findByIdAndRemove(appointmentId);
 
+        // Cancel appointment reminder
+        schedule.cancelJob(String(appointmentId));
+
         res.status(200).json({ message: 'Appointment deleted successfully' });
     } catch (error) {
         console.log(error);
@@ -238,19 +247,20 @@ const cancelAppointment = async (req, res) => {
         await appointment.save();
 
         // Send notifications to all messaging_token values
-        const date = moment(start_time).format('DD/MM/YYYY')
-        const notification = messageTranslate(0, appointment.client.name, { date: date }, 'en');
+        const date = moment(appointment.start_time).format('DD/MM/YYYY')
+        const time = moment(appointment.start_time).format('HH:mm')
         if (appointment.client.email == email) {
             // Notify barber
-            for (const messagingToken of appointment.barber.messaging_token) {
-                await sendNotification(messagingToken, notification.title, notification.body, appointment.client._id, appointment.barber._id);
-            }
+            const notification = messageTranslate(0, appointment.client.name, { date: date, time: time }, 'en');
+            sendToManyNotification(appointment.barber.messaging_token, notification, appointment.client._id, appointment.barber._id);
         } else {
             // Notify client
-            for (const messagingToken of appointment.client.messaging_token) {
-                await sendNotification(messagingToken, notification.title, notification.body, appointment.client._id, appointment.barber._id);
-            }
+            const notification = messageTranslate(0, appointment.barber.name, { date: date, time: time }, 'en');
+            sendToManyNotification(appointment.client.messaging_token, notification, appointment.client._id, appointment.barber._id);
         }
+
+        // Cancel appointment reminder
+        schedule.cancelJob(String(appointment._id));
 
         // Add the ordered products' quantity back to the product schema
         for (const orderedProduct of appointment.ordered_products) {
@@ -258,9 +268,9 @@ const cancelAppointment = async (req, res) => {
             await Product.findByIdAndUpdate(product._id, { $inc: { quantity: quantity } });
         }
 
-        res.send(appointment);
-
         findWaitListAppointment(appointment.barber._id, appointment.barber.name, appointment.location._id, appointment.start_time);
+
+        res.send(appointment);
     } catch (err) {
         console.log(err);
         res.status(500).send(err);
@@ -365,10 +375,16 @@ const createAppointmentByBarber = async (req, res) => {
         // Send notifications to all messaging_token values
         const date = moment(start_time).format('DD/MM/YYYY');
         const time = moment(start_time).format('HH:mm');
-        const notification = messageTranslate(4, client.name, { date: date, time: time }, 'en');
-        for (const messagingToken of client.messaging_token) {
-            await sendNotification(messagingToken, notification.title, notification.body, clientId, barber._id);
-        }
+        const notification = messageTranslate(4, barber.name, { date: date, time: time }, 'en');
+        sendToManyNotification(client.messaging_token, notification, client._id, barber._id);
+
+        // Schedule reminder for client 
+        const notificationReminder = messageTranslate(5, barber.name, { date: date, time: time }, 'en');
+        const timeNotification = new Date(start_time);
+        timeNotification.setMinutes(timeNotification.getMinutes() - 60);
+        schedule.scheduleJob(String(savedAppointment._id), timeNotification, () => {
+            sendToManyNotification(client.messaging_token, notificationReminder, client._id, barber._id);
+        });
 
         res.status(201).send(appointment);
     } catch (err) {
