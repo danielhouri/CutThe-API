@@ -363,7 +363,8 @@ const getNumberOfAppointmentsToday = async (barberId) => {
     const count = await Appointment.countDocuments({
         barber: barberId,
         start_time: { $gte: today },
-        end_time: { $lte: endOfDay }
+        end_time: { $lte: endOfDay },
+        status: false
     });
 
     return count;

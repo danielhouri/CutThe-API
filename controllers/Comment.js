@@ -1,5 +1,7 @@
 const Comment = require("../models/Comment");
 const Client = require("../models/Client");
+const Barber = require("../models/Barber");
+
 const { tokenValidation } = require("../tools");
 
 // Create a new Comment
@@ -16,12 +18,29 @@ const createComment = async (req, res) => {
 // Get all Comments
 const getAllComments = async (req, res) => {
     try {
-        const comments = await Comment.find();
+        const token = req.headers.authorization;
+        const decodedToken = await tokenValidation(token);
+
+        if (!decodedToken) {
+            res.status(401).json({ message: "Unauthorized" });
+            return;
+        }
+        const { email } = decodedToken;
+
+        const barber = await Barber.findOne({ email });
+        if (!barber) {
+            res.status(401).json({ message: "Unauthorized" });
+            return;
+        }
+
+        const comments = await Comment.find({ barber: barber._id })
+            .populate("client", "name");
         res.send(comments);
     } catch (err) {
         res.status(500).send(err);
     }
 };
+
 
 // Get a single Comment by id
 const getCommentById = async (req, res) => {

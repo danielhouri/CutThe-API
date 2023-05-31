@@ -300,7 +300,8 @@ const getClientInfo = async (req, res) => {
                     path: 'location',
                     model: 'Location',
                     select: 'name'
-                }
+                },
+                options: { sort: { start_time: -1 } }
             })
             .exec();
 
