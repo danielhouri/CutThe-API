@@ -4,16 +4,6 @@ const Barber = require("../models/Barber");
 
 const { tokenValidation } = require("../tools");
 
-// Create a new Comment
-const createComment = async (req, res) => {
-    try {
-        const comment = new Comment(req.body);
-        await comment.save();
-        res.status(201).send(comment);
-    } catch (err) {
-        res.status(400).send(err);
-    }
-};
 
 // Get all Comments
 const getAllComments = async (req, res) => {
@@ -135,7 +125,7 @@ const createCommentByClient = async (req, res) => {
 };
 
 
-module.exports = { createComment, getAllComments, getCommentById, updateCommentById, deleteCommentById, getCommentsByBarberId, createCommentByClient };
+module.exports = { getAllComments, getCommentsByBarberId, createCommentByClient };
 
 
 

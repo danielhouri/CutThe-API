@@ -5,7 +5,7 @@ const { getServicesByToken, createService, getServiceById, updateService, delete
 const { createSlot, getAllSlots, getSlotById, updateSlot, deleteSlot, getSlotsByBarberAndLocation } = require("./controllers/Slot");
 const { updateAppointmentTime, createAppointmentByBarber, getBarberAppointmentsByMonth, createAppointmentByClient, getAppointmentById, updateAppointment, deleteAppointment, cancelAppointment } = require("./controllers/Appointment");
 const { deleteAboutUsImage, updateAboutUsText, updateAboutUsImageList, createAboutUs, getAboutUsById, updateAboutUsById, getAboutUsByBarberId } = require("./controllers/AboutUs");
-const { createComment, getAllComments, getCommentById, updateCommentById, deleteCommentById, getCommentsByBarberId, createCommentByClient } = require("./controllers/Comment");
+const { getAllComments, getCommentsByBarberId, createCommentByClient } = require("./controllers/Comment");
 const { getProductsByToken, createProduct, getProductById, updateProduct, deleteProduct, getProductsByBarberId } = require("./controllers/Product");
 const { createWaitlistByClient } = require("./controllers/WaitList");
 const { BarberSendNotification, getAllNotifications } = require("./controllers/Notification");
@@ -83,10 +83,6 @@ router.delete("/aboutus/:id", deleteAboutUsImage);
 
 // Comment routes
 router.get("/comments", getAllComments);
-router.get("/comments/:id", getCommentById);
-router.post("/comments", createComment);
-router.put("/comments/:id", updateCommentById);
-router.delete("/comments/:id", deleteCommentById);
 router.get("/barbers/:id/comments", getCommentsByBarberId);
 router.post("/comments/clients", createCommentByClient);
 

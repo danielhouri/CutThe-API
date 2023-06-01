@@ -41,47 +41,6 @@ const getAllNotifications = async (req, res) => {
     }
 };
 
-// Read a single notification by ID
-const getNotificationById = async (req, res) => {
-    try {
-        const notification = await Notification.findById(req.params.id).populate('client barber');
-        if (!notification) {
-            return res.status(404).send('Notification not found');
-        }
-        res.send(notification);
-    } catch (err) {
-        res.status(500).send(err);
-    }
-};
-
-// Update a notification by ID
-const updateNotification = async (req, res) => {
-    try {
-        const notification = await Notification.findByIdAndUpdate(req.params.id, req.body, {
-            new: true,
-            runValidators: true,
-        }).populate('client barber');
-        if (!notification) {
-            return res.status(404).send('Notification not found');
-        }
-        res.send(notification);
-    } catch (err) {
-        res.status(400).send(err);
-    }
-};
-
-// Delete a notification by ID
-const deleteNotification = async (req, res) => {
-    try {
-        const notification = await Notification.findByIdAndDelete(req.params.id);
-        if (!notification) {
-            return res.status(404).send('Notification not found');
-        }
-        res.send(notification);
-    } catch (err) {
-        res.status(500).send(err);
-    }
-};
 
 // Update a notification by ID
 const BarberSendNotification = async (req, res) => {
@@ -121,4 +80,4 @@ const BarberSendNotification = async (req, res) => {
     }
 };
 
-module.exports = { BarberSendNotification, createNotification, getAllNotifications, getNotificationById, updateNotification, deleteNotification };
+module.exports = { BarberSendNotification, createNotification, getAllNotifications };
