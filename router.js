@@ -31,7 +31,7 @@ router.get("/clients/info/:id", getClientInfo);
 router.get("/barbers/:id", getBarberById);
 router.put("/barbers", updateBarber);
 router.get("/barbers/closest/:city/:country/:lat/:lon", getClosestBarber);
-router.get("/barbers/search/:city/:country/:lat/:lon/:store/:home/:cash/:credit", getBarberBySearch);
+router.get("/barbers/search/:city/:country/:lat/:lon/:cash/:credit", getBarberBySearch);
 router.get("/barbers/clients/get", getBarberClients);
 router.delete("/barbers/clients/:id", removeClientFromBarber);
 router.post("/barbers/clients/new", AddClientToBarber);

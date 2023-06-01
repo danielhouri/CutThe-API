@@ -216,7 +216,7 @@ async function findClosestBarbers(city, country, coordinates) {
     return results;
 }
 
-async function searchBarber(city, country, lat, lon, store, home, cash, credit) {
+async function searchBarber(city, country, lat, lon, cash, credit) {
     const locations = await Location.find({ city, country }).select('name address city barber coordinates').populate({
         path: 'barber',
         select: 'name profilePicture pay_barber_cash pay_barber_credit_card aboutUs',
@@ -228,13 +228,6 @@ async function searchBarber(city, country, lat, lon, store, home, cash, credit) 
 
     const filteredBarbers = locations.filter((location) => {
         let isMatch = true;
-        // if (store === "true" && !barber.store) {
-        //     isMatch = false;
-        // }
-
-        // if (home === "true" && !barber.home) {
-        //     isMatch = false;
-        // }
 
         if (cash === "true" && !location.barber.pay_barber_cash) {
             isMatch = false;

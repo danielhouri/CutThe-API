@@ -97,8 +97,9 @@ const getClosestBarber = async (req, res) => {
 
 const getBarberBySearch = async (req, res) => {
     try {
-        const { city, country, lat, lon, store, home, cash, credit } = req.params;
-        const barberList = await searchBarber(city, country, lat, lon, store, home, cash, credit);
+        const { city, country, lat, lon, cash, credit } = req.params;
+        const barberList = await searchBarber(city, country, lat, lon, cash, credit);
+
         res.status(200).json(barberList);
     } catch (error) {
         console.error(error);
