@@ -4,7 +4,6 @@ const Barber = require("../models/Barber");
 
 const { tokenValidation } = require("../tools");
 
-
 // Get all Comments
 const getAllComments = async (req, res) => {
     try {

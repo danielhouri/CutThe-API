@@ -5,7 +5,7 @@ const Product = require("../models/Product");
 const moment = require('moment/moment');
 const schedule = require('node-schedule');
 
-const { sendToManyNotification, tokenValidation, sendNotification, findWaitListAppointment, messageTranslate } = require("../tools");
+const { sendToManyNotification, tokenValidation, findWaitListAppointment, messageTranslate } = require("../tools");
 
 // Create a new appointment
 const createAppointmentByClient = async (req, res) => {

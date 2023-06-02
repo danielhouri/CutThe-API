@@ -63,8 +63,8 @@ const getAllSlots = async (req, res) => {
         }
 
         const slots = await Slot.find({ barber: barber._id })
-            .populate('location') // Populate the 'location' field
-            .sort({ end_time: -1 }); // Sort by 'end_time' in descending order
+            .populate('location') 
+            .sort({ end_time: -1 });
 
         res.send(slots);
     } catch (err) {
