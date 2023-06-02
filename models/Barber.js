@@ -25,10 +25,6 @@ const BarberSchema = new mongoose.Schema({
         type: String,
         default: '',
     },
-    locations: [{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Location'
-    }],
     preferred_location: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Location'
