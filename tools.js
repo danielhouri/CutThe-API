@@ -632,7 +632,7 @@ const messageTranslate = (code, name, payload, language) => {
             else if (code == 5) {
                 const { date, time } = payload;
                 notification.title = "תזכורת לתור"
-                notification.body = 'זוהי תזכורת עבור תור שנקבע עבורך עם ' + name + 'בתאריך ' + date + ' ובשעה ' + time + '.';
+                notification.body = 'זוהי תזכורת עבור תור שנקבע עבורך עם ' + name + ' בתאריך ' + date + ' ובשעה ' + time + '.';
             }
         }
         // English

@@ -1,5 +1,4 @@
 const { getAvailableSlots } = require('../tools');
-const mongoose = require('mongoose');
 const moment = require('moment/moment');
 const Slot = require('../models/Slot');
 const Appointment = require('../models/Appointment');
