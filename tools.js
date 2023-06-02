@@ -171,6 +171,12 @@ async function getAvailableSlots(barberId, locationId) {
 }
 
 async function findClosestBarbers(city, country, coordinates) {
+    /**
+     * This function finds the closest barbers to a given location by calculating the 
+     * distance between the current location and each barber's location.
+     * It returns information about the closest barbers, including their average rating, 
+     * number of comments, and available slots for the current day.
+     */
     // Find all locations in the same city and country
     const locations = await Location.find({ city, country }).populate('barber slots');
 
@@ -217,6 +223,11 @@ async function findClosestBarbers(city, country, coordinates) {
 }
 
 async function searchBarber(city, country, lat, lon, cash, credit) {
+    /**
+     * This function searches for barbers in a specific city and country. 
+     * It filters the results based on payment options (cash or credit). 
+     * It also retrieves additional information such as barber profile pictures and aboutUs pictures.
+     */
     const locations = await Location.find({ city, country }).select('name address city barber coordinates').populate({
         path: 'barber',
         select: 'name profilePicture pay_barber_cash pay_barber_credit_card aboutUs',
@@ -285,6 +296,11 @@ async function searchBarber(city, country, lat, lon, cash, credit) {
 }
 
 async function sendNotification(token, name, payload, clientId, barberId) {
+    /**
+     * This function sends a push notification to a specific user identified by their messaging token. 
+     * It uses the Firebase Cloud Messaging service to send the notification and also saves
+     * the notification details in a database.
+     */
     const message = {
         token: token,
         notification: {
@@ -314,6 +330,11 @@ async function sendNotification(token, name, payload, clientId, barberId) {
 }
 
 async function findWaitListAppointment(barberId, name, locationId, date) {
+    /**
+     * This function finds clients on the waiting list for a canceled appointment 
+     * and sends notifications to them. It retrieves the waiting list clients for a 
+     * specific barber, location, and date. It then sends notifications to these clients and removes them from the waiting list.
+     */
     const time = moment(date).format('HH:mm')
     let isMorning = time <= '12:00';
     let isAfternoon = time >= '12:00' && time < '18:00';
@@ -347,11 +368,15 @@ async function findWaitListAppointment(barberId, name, locationId, date) {
 }
 
 const getNumberOfAppointmentsToday = async (barberId) => {
+    /**
+     * This function counts the number of appointments for a specific barber 
+     * that are scheduled for the current day.
+     */
     const today = new Date();
-    today.setHours(0, 0, 0, 0); // Set time to the beginning of the day
+    today.setHours(0, 0, 0, 0);
 
     const endOfDay = new Date(today);
-    endOfDay.setHours(23, 59, 59, 999); // Set time to the end of the day
+    endOfDay.setHours(23, 59, 59, 999);
 
     const count = await Appointment.countDocuments({
         barber: barberId,
@@ -365,11 +390,15 @@ const getNumberOfAppointmentsToday = async (barberId) => {
 
 
 const getNumberOfProductsPurchasedToday = async (barberId) => {
+    /**
+     * This function calculates the total number of products 
+     * purchased by clients for a specific barber on the current day.
+     */
     const today = new Date();
-    today.setHours(0, 0, 0, 0); // Set time to the beginning of the day
+    today.setHours(0, 0, 0, 0);
 
     const endOfDay = new Date();
-    endOfDay.setHours(23, 59, 59, 999); // Set time to the end of the day
+    endOfDay.setHours(23, 59, 59, 999);
 
     const count = await Appointment.aggregate([
         { $match: { barber: barberId, start_time: { $gte: today, $lte: endOfDay } } },
@@ -381,6 +410,10 @@ const getNumberOfProductsPurchasedToday = async (barberId) => {
 };
 
 const getNumberOfCancelledAppointments = async (barberId) => {
+    /**
+     * This function counts the number of canceled appointments for a
+     * specific barber on the current day.
+     */
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     const tomorrow = new Date(today);
@@ -397,9 +430,11 @@ const getNumberOfCancelledAppointments = async (barberId) => {
 
 
 const getNextAppointments = async (barberId) => {
-    // Get today's date
+    /**
+     * This function retrieves the next 10 upcoming appointments 
+     * for a specific barber.
+     */
     const today = new Date();
-    // Set the end time of today by setting hours, minutes, seconds, and milliseconds to 0
     const endOfDay = new Date(today.getFullYear(), today.getMonth(), today.getDate(), 23, 59, 59, 999);
 
     const appointments = await Appointment.find({
@@ -416,8 +451,12 @@ const getNextAppointments = async (barberId) => {
 
 
 const getNumberOfCompletedAppointmentsToday = async (barberId) => {
+    /**
+     * This function counts the number of completed appointments 
+     * for a specific barber on the current day.
+     */
     const today = new Date();
-    today.setHours(0, 0, 0, 0); // Set time to the beginning of the day
+    today.setHours(0, 0, 0, 0);
 
     const count = await Appointment.countDocuments({
         barber: barberId,
@@ -430,12 +469,16 @@ const getNumberOfCompletedAppointmentsToday = async (barberId) => {
 };
 
 const getNumberOfAppointmentsPastWeek = async (barberId) => {
+    /**
+     * This function counts the number of appointments for a specific
+     * barber in the past week.
+     */
     const today = new Date();
-    const weekAgo = new Date(today); // Create a new date object for the current day
-    weekAgo.setDate(weekAgo.getDate() - 7); // Subtract 7 days from the current day
-    weekAgo.setHours(0, 0, 0, 0); // Set time to the beginning of the day
-    const endOfDay = new Date(weekAgo); // Create a new date object for the weekAgo day
-    endOfDay.setHours(23, 59, 59, 999); // Set time to the end of the day
+    const weekAgo = new Date(today);
+    weekAgo.setDate(weekAgo.getDate() - 7);
+    weekAgo.setHours(0, 0, 0, 0);
+    const endOfDay = new Date(weekAgo);
+    endOfDay.setHours(23, 59, 59, 999);
 
     const count = await Appointment.countDocuments({
         barber: barberId,
@@ -446,11 +489,15 @@ const getNumberOfAppointmentsPastWeek = async (barberId) => {
 };
 
 const getEstimatedRevenue = async (barberId) => {
+    /**
+     * This function calculates the estimated revenue for a specific barber,
+     * both for the current day and the past week.
+     */
     const today = new Date();
-    today.setHours(0, 0, 0, 0); // Set time to the beginning of the day
+    today.setHours(0, 0, 0, 0);
 
-    const endOfDay = new Date(today); // Create a new date object for the current day
-    endOfDay.setHours(23, 59, 59, 999); // Set time to the end of the day
+    const endOfDay = new Date(today);
+    endOfDay.setHours(23, 59, 59, 999);
 
     const revenueToday = await Appointment.aggregate([
         { $match: { barber: barberId, start_time: { $gte: today, $lte: endOfDay } } },
@@ -476,11 +523,14 @@ const getEstimatedRevenue = async (barberId) => {
 
 
 const getTotalBookedHours = async (barberId) => {
+    /**
+     * This function calculates the total number of booked hours and slot hours for a specific barber,
+     * both for the current day and the past week.
+     */
     const today = new Date();
-    today.setHours(0, 0, 0, 0); // Set time to the beginning of the day
-    const endOfDay = new Date(today); // Create a new date object for the current day
-    endOfDay.setHours(23, 59, 59, 999); // Set time to the end of the day
-
+    today.setHours(0, 0, 0, 0);
+    const endOfDay = new Date(today);
+    endOfDay.setHours(23, 59, 59, 999);
 
     const bookedHoursToday = await Appointment.aggregate([
         { $match: { barber: barberId, start_time: { $gte: today }, end_time: { $lte: endOfDay } } },
@@ -496,9 +546,9 @@ const getTotalBookedHours = async (barberId) => {
 
     const weekAgo = new Date();
     weekAgo.setDate(weekAgo.getDate() - 7);
-    weekAgo.setHours(0, 0, 0, 0); // Set time to the beginning of the day
-    const endOfLastDay = new Date(weekAgo); // Create a new date object for the weekAgo day
-    endOfDay.setHours(23, 59, 59, 999); // Set time to the end of the day
+    weekAgo.setHours(0, 0, 0, 0);
+    const endOfLastDay = new Date(weekAgo);
+    endOfDay.setHours(23, 59, 59, 999);
 
     const bookedHoursPastWeek = await Appointment.aggregate([
         { $match: { barber: barberId, start_time: { $gte: weekAgo, $lte: endOfLastDay } } },
@@ -545,6 +595,11 @@ const getTotalBookedHours = async (barberId) => {
 };
 
 const messageTranslate = (code, name, payload, language) => {
+    /**
+     * This function translates a given message code and payload into a specific language.
+     * It returns a translated notification object with a title and body.
+     */
+
     let notification = { title: '', body: '' };
     try {
         // Hebrew
@@ -553,31 +608,31 @@ const messageTranslate = (code, name, payload, language) => {
             if (code == 0) {
                 const { date, time } = payload;
                 notification.title = "ביטול תור"
-                notification.body = 'התור שנקבע עם ' + { name } + ' בתאריך ' + { date } + ' בשעה ' + { time } + ' בוטל.';
+                notification.body = 'התור שנקבע עם ' + name + ' בתאריך ' + date + ' בשעה ' + time + ' בוטל.';
             }
             // Edit appoinement
             else if (code == 1) {
                 const { date, time } = payload;
                 notification.title = "עדכון תור"
-                notification.body = 'עודכן התור שנקבע לך עם ' + { name } + ' בתאריך ' + { date } + ' לשעה ' + { time } + '.';
+                notification.body = 'עודכן התור שנקבע לך עם ' + name + ' בתאריך ' + date + ' לשעה ' + time + '.';
             }
             // Free Slot
             else if (code == 2) {
                 const { date } = payload;
                 notification.title = "תור פנוי"
-                notification.body = 'ביקשת שנזכיר לך אם מתפנה תור לתאריך ' + { date } + ' עם ' + { name } + ', מוזמן להיכנס לאפליקציה לקבוע תור מחדש.';
+                notification.body = 'ביקשת שנזכיר לך אם מתפנה תור לתאריך ' + date + ' עם ' + name + ', מוזמן להיכנס לאפליקציה לקבוע תור מחדש.';
             }
             // New Appointment
             else if (code == 4) {
                 const { date, time } = payload;
                 notification.title = "תור חדש"
-                notification.body = 'נקבע תור חדש עם ' + { name } + ' בתאריך ' + { date } + ' בשעה ' + { time } + '.';
+                notification.body = 'נקבע תור חדש עם ' + name + ' בתאריך ' + date + ' בשעה ' + time + '.';
             }
             // Appointment Remeinder
             else if (code == 5) {
                 const { date, time } = payload;
                 notification.title = "תזכורת לתור"
-                notification.body = 'זוהי תזכורת עבור תור שנקבע עבורך עם ' + { name } + 'בתאריך ' + { date } + ' ובשעה ' + { time } + '.';
+                notification.body = 'זוהי תזכורת עבור תור שנקבע עבורך עם ' + name + 'בתאריך ' + date + ' ובשעה ' + time + '.';
             }
         }
         // English

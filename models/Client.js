@@ -41,7 +41,12 @@ const ClientSchema = new mongoose.Schema({
         type: String,
         default: [],
         required: true
-    }]
+    }],
+    language: {
+        type: String,
+        required: true,
+        default: 'en'
+    }
 });
 
 module.exports = mongoose.model("Client", ClientSchema);

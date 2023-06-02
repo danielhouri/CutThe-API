@@ -66,11 +66,11 @@ const createAppointmentByClient = async (req, res) => {
         // Send notifications to the barber
         const date = moment(start_time).format('DD/MM/YYYY')
         const time = moment(start_time).format('HH:mm')
-        const notification = messageTranslate(4, client.name, { date: date, time: time }, 'en');
+        const notification = messageTranslate(4, client.name, { date: date, time: time }, barber.language);
         sendToManyNotification(barber.messaging_token, notification, client._id, barberId);
 
         // Schedule reminder for client 
-        const notificationReminder = messageTranslate(5, client.name, { date: date, time: time }, 'en');
+        const notificationReminder = messageTranslate(5, client.name, { date: date, time: time }, client.language);
         const timeNotification = new Date(start_time);
         timeNotification.setMinutes(timeNotification.getMinutes() - 60);
         schedule.scheduleJob(String(savedAppointment._id), timeNotification, () => {
@@ -251,11 +251,11 @@ const cancelAppointment = async (req, res) => {
         const time = moment(appointment.start_time).format('HH:mm')
         if (appointment.client.email == email) {
             // Notify barber
-            const notification = messageTranslate(0, appointment.client.name, { date: date, time: time }, 'en');
+            const notification = messageTranslate(0, appointment.client.name, { date: date, time: time }, appointment.barber.language);
             sendToManyNotification(appointment.barber.messaging_token, notification, appointment.client._id, appointment.barber._id);
         } else {
             // Notify client
-            const notification = messageTranslate(0, appointment.barber.name, { date: date, time: time }, 'en');
+            const notification = messageTranslate(0, appointment.barber.name, { date: date, time: time }, appointment.client.language);
             sendToManyNotification(appointment.client.messaging_token, notification, appointment.client._id, appointment.barber._id);
         }
 
@@ -375,11 +375,11 @@ const createAppointmentByBarber = async (req, res) => {
         // Send notifications to all messaging_token values
         const date = moment(start_time).format('DD/MM/YYYY');
         const time = moment(start_time).format('HH:mm');
-        const notification = messageTranslate(4, barber.name, { date: date, time: time }, 'en');
+        const notification = messageTranslate(4, barber.name, { date: date, time: time }, client.language);
         sendToManyNotification(client.messaging_token, notification, client._id, barber._id);
 
         // Schedule reminder for client 
-        const notificationReminder = messageTranslate(5, barber.name, { date: date, time: time }, 'en');
+        const notificationReminder = messageTranslate(5, barber.name, { date: date, time: time }, client.language);
         const timeNotification = new Date(start_time);
         timeNotification.setMinutes(timeNotification.getMinutes() - 60);
         schedule.scheduleJob(String(savedAppointment._id), timeNotification, () => {

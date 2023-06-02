@@ -17,7 +17,7 @@ const authClient = async (req, res) => {
 
         let client = await Client.findOne({ email });
 
-        const { messagingToken } = req.body;
+        const { messagingToken, lang } = req.body;
 
         if (!client) {
             client = new Client({ name, given_name, family_name, email });
@@ -26,8 +26,13 @@ const authClient = async (req, res) => {
 
         // Check if the messagingToken already exists in the messaging_token array
         if (messagingToken && !client.messaging_token.includes(messagingToken)) {
-            console.log(messagingToken)
             client.messaging_token.push(messagingToken);
+            await client.save();
+        }
+
+        // Update the client language 
+        if (lang && client.language != lang) {
+            client.language = lang;
             await client.save();
         }
 
