@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1685722805131" clover="3.2.0">
-  <project timestamp="1685722805131" name="All files">
-    <metrics statements="903" coveredstatements="692" conditionals="67" coveredconditionals="58" methods="16" coveredmethods="11" elements="986" coveredelements="761" complexity="0" loc="903" ncloc="903" packages="2" files="7" classes="7"/>
-    <package name="CutThe-API">
-      <metrics statements="685" coveredstatements="474" conditionals="67" coveredconditionals="58" methods="16" coveredmethods="11"/>
-      <file name="tools.js" path="/Users/dorhuri/Desktop/assignment/server-CutThe/CutThe-API/new folder/CutThe-API/tools.js">
-        <metrics statements="685" coveredstatements="474" conditionals="67" coveredconditionals="58" methods="16" coveredmethods="11"/>
+<coverage generated="1685889298761" clover="3.2.0">
+  <project timestamp="1685889298761" name="All files">
+    <metrics statements="966" coveredstatements="740" conditionals="65" coveredconditionals="57" methods="16" coveredmethods="10" elements="1047" coveredelements="807" complexity="0" loc="966" ncloc="966" packages="2" files="8" classes="8"/>
+    <package name="API">
+      <metrics statements="685" coveredstatements="459" conditionals="65" coveredconditionals="57" methods="16" coveredmethods="10"/>
+      <file name="tools.js" path="C:\Project\API\tools.js">
+        <metrics statements="685" coveredstatements="459" conditionals="65" coveredconditionals="57" methods="16" coveredmethods="10"/>
         <line num="1" count="1" type="stmt"/>
         <line num="2" count="1" type="stmt"/>
         <line num="3" count="1" type="stmt"/>
@@ -437,22 +437,22 @@
         <line num="429" count="7" type="stmt"/>
         <line num="430" count="1" type="stmt"/>
         <line num="431" count="1" type="stmt"/>
-        <line num="432" count="1" type="cond" truecount="1" falsecount="0"/>
-        <line num="433" count="1" type="stmt"/>
-        <line num="434" count="1" type="stmt"/>
-        <line num="435" count="1" type="stmt"/>
-        <line num="436" count="1" type="stmt"/>
-        <line num="437" count="1" type="stmt"/>
-        <line num="438" count="1" type="stmt"/>
-        <line num="439" count="1" type="stmt"/>
-        <line num="440" count="1" type="stmt"/>
-        <line num="441" count="1" type="stmt"/>
-        <line num="442" count="1" type="stmt"/>
-        <line num="443" count="1" type="stmt"/>
-        <line num="444" count="1" type="stmt"/>
-        <line num="445" count="1" type="stmt"/>
-        <line num="446" count="1" type="stmt"/>
-        <line num="447" count="1" type="cond" truecount="0" falsecount="1"/>
+        <line num="432" count="1" type="stmt"/>
+        <line num="433" count="0" type="stmt"/>
+        <line num="434" count="0" type="stmt"/>
+        <line num="435" count="0" type="stmt"/>
+        <line num="436" count="0" type="stmt"/>
+        <line num="437" count="0" type="stmt"/>
+        <line num="438" count="0" type="stmt"/>
+        <line num="439" count="0" type="stmt"/>
+        <line num="440" count="0" type="stmt"/>
+        <line num="441" count="0" type="stmt"/>
+        <line num="442" count="0" type="stmt"/>
+        <line num="443" count="0" type="stmt"/>
+        <line num="444" count="0" type="stmt"/>
+        <line num="445" count="0" type="stmt"/>
+        <line num="446" count="0" type="stmt"/>
+        <line num="447" count="0" type="stmt"/>
         <line num="448" count="0" type="stmt"/>
         <line num="449" count="0" type="stmt"/>
         <line num="450" count="0" type="stmt"/>
@@ -693,9 +693,9 @@
         <line num="685" count="1" type="stmt"/>
       </file>
     </package>
-    <package name="CutThe-API.models">
-      <metrics statements="218" coveredstatements="218" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
-      <file name="Appointment.js" path="/Users/dorhuri/Desktop/assignment/server-CutThe/CutThe-API/new folder/CutThe-API/models/Appointment.js">
+    <package name="API.models">
+      <metrics statements="281" coveredstatements="281" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+      <file name="Appointment.js" path="C:\Project\API\models\Appointment.js">
         <metrics statements="54" coveredstatements="54" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
         <line num="1" count="1" type="stmt"/>
         <line num="2" count="1" type="stmt"/>
@@ -752,7 +752,73 @@
         <line num="53" count="1" type="stmt"/>
         <line num="54" count="1" type="stmt"/>
       </file>
-      <file name="Comment.js" path="/Users/dorhuri/Desktop/assignment/server-CutThe/CutThe-API/new folder/CutThe-API/models/Comment.js">
+      <file name="Barber.js" path="C:\Project\API\models\Barber.js">
+        <metrics statements="63" coveredstatements="63" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="1" count="1" type="stmt"/>
+        <line num="2" count="1" type="stmt"/>
+        <line num="3" count="1" type="stmt"/>
+        <line num="4" count="1" type="stmt"/>
+        <line num="5" count="1" type="stmt"/>
+        <line num="6" count="1" type="stmt"/>
+        <line num="7" count="1" type="stmt"/>
+        <line num="8" count="1" type="stmt"/>
+        <line num="9" count="1" type="stmt"/>
+        <line num="10" count="1" type="stmt"/>
+        <line num="11" count="1" type="stmt"/>
+        <line num="12" count="1" type="stmt"/>
+        <line num="13" count="1" type="stmt"/>
+        <line num="14" count="1" type="stmt"/>
+        <line num="15" count="1" type="stmt"/>
+        <line num="16" count="1" type="stmt"/>
+        <line num="17" count="1" type="stmt"/>
+        <line num="18" count="1" type="stmt"/>
+        <line num="19" count="1" type="stmt"/>
+        <line num="20" count="1" type="stmt"/>
+        <line num="21" count="1" type="stmt"/>
+        <line num="22" count="1" type="stmt"/>
+        <line num="23" count="1" type="stmt"/>
+        <line num="24" count="1" type="stmt"/>
+        <line num="25" count="1" type="stmt"/>
+        <line num="26" count="1" type="stmt"/>
+        <line num="27" count="1" type="stmt"/>
+        <line num="28" count="1" type="stmt"/>
+        <line num="29" count="1" type="stmt"/>
+        <line num="30" count="1" type="stmt"/>
+        <line num="31" count="1" type="stmt"/>
+        <line num="32" count="1" type="stmt"/>
+        <line num="33" count="1" type="stmt"/>
+        <line num="34" count="1" type="stmt"/>
+        <line num="35" count="1" type="stmt"/>
+        <line num="36" count="1" type="stmt"/>
+        <line num="37" count="1" type="stmt"/>
+        <line num="38" count="1" type="stmt"/>
+        <line num="39" count="1" type="stmt"/>
+        <line num="40" count="1" type="stmt"/>
+        <line num="41" count="1" type="stmt"/>
+        <line num="42" count="1" type="stmt"/>
+        <line num="43" count="1" type="stmt"/>
+        <line num="44" count="1" type="stmt"/>
+        <line num="45" count="1" type="stmt"/>
+        <line num="46" count="1" type="stmt"/>
+        <line num="47" count="1" type="stmt"/>
+        <line num="48" count="1" type="stmt"/>
+        <line num="49" count="1" type="stmt"/>
+        <line num="50" count="1" type="stmt"/>
+        <line num="51" count="1" type="stmt"/>
+        <line num="52" count="1" type="stmt"/>
+        <line num="53" count="1" type="stmt"/>
+        <line num="54" count="1" type="stmt"/>
+        <line num="55" count="1" type="stmt"/>
+        <line num="56" count="1" type="stmt"/>
+        <line num="57" count="1" type="stmt"/>
+        <line num="58" count="1" type="stmt"/>
+        <line num="59" count="1" type="stmt"/>
+        <line num="60" count="1" type="stmt"/>
+        <line num="61" count="1" type="stmt"/>
+        <line num="62" count="1" type="stmt"/>
+        <line num="63" count="1" type="stmt"/>
+      </file>
+      <file name="Comment.js" path="C:\Project\API\models\Comment.js">
         <metrics statements="28" coveredstatements="28" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
         <line num="1" count="1" type="stmt"/>
         <line num="2" count="1" type="stmt"/>
@@ -783,7 +849,7 @@
         <line num="27" count="1" type="stmt"/>
         <line num="28" count="1" type="stmt"/>
       </file>
-      <file name="Location.js" path="/Users/dorhuri/Desktop/assignment/server-CutThe/CutThe-API/new folder/CutThe-API/models/Location.js">
+      <file name="Location.js" path="C:\Project\API\models\Location.js">
         <metrics statements="42" coveredstatements="42" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
         <line num="1" count="1" type="stmt"/>
         <line num="2" count="1" type="stmt"/>
@@ -828,7 +894,7 @@
         <line num="41" count="1" type="stmt"/>
         <line num="42" count="1" type="stmt"/>
       </file>
-      <file name="Notification.js" path="/Users/dorhuri/Desktop/assignment/server-CutThe/CutThe-API/new folder/CutThe-API/models/Notification.js">
+      <file name="Notification.js" path="C:\Project\API\models\Notification.js">
         <metrics statements="28" coveredstatements="28" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
         <line num="1" count="1" type="stmt"/>
         <line num="2" count="1" type="stmt"/>
@@ -859,7 +925,7 @@
         <line num="27" count="1" type="stmt"/>
         <line num="28" count="1" type="stmt"/>
       </file>
-      <file name="Slot.js" path="/Users/dorhuri/Desktop/assignment/server-CutThe/CutThe-API/new folder/CutThe-API/models/Slot.js">
+      <file name="Slot.js" path="C:\Project\API\models\Slot.js">
         <metrics statements="25" coveredstatements="25" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
         <line num="1" count="1" type="stmt"/>
         <line num="2" count="1" type="stmt"/>
@@ -887,7 +953,7 @@
         <line num="24" count="1" type="stmt"/>
         <line num="25" count="1" type="stmt"/>
       </file>
-      <file name="Waitlist.js" path="/Users/dorhuri/Desktop/assignment/server-CutThe/CutThe-API/new folder/CutThe-API/models/Waitlist.js">
+      <file name="WaitList.js" path="C:\Project\API\models\WaitList.js">
         <metrics statements="41" coveredstatements="41" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
         <line num="1" count="1" type="stmt"/>
         <line num="2" count="1" type="stmt"/>

@@ -443,7 +443,7 @@ const getNextAppointments = async (barberId) => {
     })
         .sort({ start_time: 1 })
         .limit(10)
-        .populate("barber", "name profilePicture")
+        .populate("client", "name profilePicture")
         .populate("location", "name");
 
     return appointments;
