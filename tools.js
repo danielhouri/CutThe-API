@@ -436,7 +436,6 @@ const getNextAppointments = async (barberId) => {
      */
     const today = new Date();
     const endOfDay = new Date(today.getFullYear(), today.getMonth(), today.getDate(), 23, 59, 59, 999);
-
     const appointments = await Appointment.find({
         barber: barberId,
         start_time: { $gte: today, $lte: endOfDay }
@@ -445,7 +444,6 @@ const getNextAppointments = async (barberId) => {
         .limit(10)
         .populate("client", "name profilePicture")
         .populate("location", "name");
-
     return appointments;
 };
 
