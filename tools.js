@@ -329,7 +329,7 @@ async function sendNotification(token, name, payload, clientId, barberId) {
     console.log('New notification created:', savedNotification);
 }
 
-async function findWaitListAppointment(barberId, name, locationId, date) {
+async function findWaitListAppointment(barberId, name, locationId, date,_messageTranslate=messageTranslate,_sendToManyNotification=sendToManyNotification) {
     /**
      * This function finds clients on the waiting list for a canceled appointment 
      * and sends notifications to them. It retrieves the waiting list clients for a 
@@ -359,9 +359,9 @@ async function findWaitListAppointment(barberId, name, locationId, date) {
     const dateT = moment(date).format('DD/MM/YYYY')
     for (const waitingListClient of waitingListClients) {
         const { client } = waitingListClient;
-        const notification = messageTranslate(2, name, { date: dateT, time: time }, 'en');
-        sendToManyNotification(client.messaging_token, notification, client._id, barberId);
-
+        const notification = _messageTranslate(2, name, { date: dateT, time: time }, 'en');
+        console.log(client)
+        _sendToManyNotification(client.messaging_token, notification, client._id, barberId);
         // Remove the waiting list client
         await WaitList.deleteOne({ _id: waitingListClient._id });
     }
