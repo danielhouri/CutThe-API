@@ -179,7 +179,6 @@ async function findClosestBarbers(city, country, coordinates) {
      */
     // Find all locations in the same city and country
     const locations = await Location.find({ city, country }).populate('barber slots');
-
     // Calculate the distance between the current location and each location
     const distances = locations.map((location) => {
         const distance = geolib.getDistance(
@@ -201,7 +200,6 @@ async function findClosestBarbers(city, country, coordinates) {
         const barber = distance.location.barber;
         const comments = await Comment.find({ barber: barber._id });
         const avgRating = comments.reduce((acc, comment) => acc + comment.rating, 0) / comments.length;
-
         // Get the slots for today
         const slots = await Slot.find({
             barber: barber._id,
@@ -360,7 +358,6 @@ async function findWaitListAppointment(barberId, name, locationId, date,_message
     for (const waitingListClient of waitingListClients) {
         const { client } = waitingListClient;
         const notification = _messageTranslate(2, name, { date: dateT, time: time }, 'en');
-        console.log(client)
         _sendToManyNotification(client.messaging_token, notification, client._id, barberId);
         // Remove the waiting list client
         await WaitList.deleteOne({ _id: waitingListClient._id });
