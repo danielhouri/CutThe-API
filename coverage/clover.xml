@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1686245390238" clover="3.2.0">
-  <project timestamp="1686245390238" name="All files">
-    <metrics statements="898" coveredstatements="830" conditionals="81" coveredconditionals="69" methods="16" coveredmethods="14" elements="995" coveredelements="913" complexity="0" loc="898" ncloc="898" packages="2" files="7" classes="7"/>
-    <package name="CutThe-API">
-      <metrics statements="680" coveredstatements="612" conditionals="81" coveredconditionals="69" methods="16" coveredmethods="14"/>
-      <file name="tools.js" path="/Users/dorhuri/Desktop/assignment/server-CutThe/CutThe-API/new folder/CutThe-API/tools.js">
-        <metrics statements="680" coveredstatements="612" conditionals="81" coveredconditionals="69" methods="16" coveredmethods="14"/>
+<coverage generated="1686295929447" clover="3.2.0">
+  <project timestamp="1686295929447" name="All files">
+    <metrics statements="898" coveredstatements="830" conditionals="82" coveredconditionals="69" methods="16" coveredmethods="14" elements="996" coveredelements="913" complexity="0" loc="898" ncloc="898" packages="2" files="7" classes="7"/>
+    <package name="API">
+      <metrics statements="680" coveredstatements="612" conditionals="82" coveredconditionals="69" methods="16" coveredmethods="14"/>
+      <file name="tools.js" path="C:\Project\API\tools.js">
+        <metrics statements="680" coveredstatements="612" conditionals="82" coveredconditionals="69" methods="16" coveredmethods="14"/>
         <line num="1" count="1" type="stmt"/>
         <line num="2" count="1" type="stmt"/>
         <line num="3" count="1" type="stmt"/>
@@ -343,7 +343,7 @@
         <line num="335" count="4" type="stmt"/>
         <line num="336" count="4" type="stmt"/>
         <line num="337" count="4" type="stmt"/>
-        <line num="338" count="4" type="stmt"/>
+        <line num="338" count="4" type="cond" truecount="0" falsecount="1"/>
         <line num="339" count="4" type="stmt"/>
         <line num="340" count="4" type="stmt"/>
         <line num="341" count="4" type="stmt"/>
@@ -688,9 +688,9 @@
         <line num="680" count="1" type="stmt"/>
       </file>
     </package>
-    <package name="CutThe-API.models">
+    <package name="API.models">
       <metrics statements="218" coveredstatements="218" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
-      <file name="Appointment.js" path="/Users/dorhuri/Desktop/assignment/server-CutThe/CutThe-API/new folder/CutThe-API/models/Appointment.js">
+      <file name="Appointment.js" path="C:\Project\API\models\Appointment.js">
         <metrics statements="54" coveredstatements="54" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
         <line num="1" count="1" type="stmt"/>
         <line num="2" count="1" type="stmt"/>
@@ -747,7 +747,7 @@
         <line num="53" count="1" type="stmt"/>
         <line num="54" count="1" type="stmt"/>
       </file>
-      <file name="Comment.js" path="/Users/dorhuri/Desktop/assignment/server-CutThe/CutThe-API/new folder/CutThe-API/models/Comment.js">
+      <file name="Comment.js" path="C:\Project\API\models\Comment.js">
         <metrics statements="28" coveredstatements="28" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
         <line num="1" count="1" type="stmt"/>
         <line num="2" count="1" type="stmt"/>
@@ -778,7 +778,7 @@
         <line num="27" count="1" type="stmt"/>
         <line num="28" count="1" type="stmt"/>
       </file>
-      <file name="Location.js" path="/Users/dorhuri/Desktop/assignment/server-CutThe/CutThe-API/new folder/CutThe-API/models/Location.js">
+      <file name="Location.js" path="C:\Project\API\models\Location.js">
         <metrics statements="42" coveredstatements="42" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
         <line num="1" count="1" type="stmt"/>
         <line num="2" count="1" type="stmt"/>
@@ -823,7 +823,7 @@
         <line num="41" count="1" type="stmt"/>
         <line num="42" count="1" type="stmt"/>
       </file>
-      <file name="Notification.js" path="/Users/dorhuri/Desktop/assignment/server-CutThe/CutThe-API/new folder/CutThe-API/models/Notification.js">
+      <file name="Notification.js" path="C:\Project\API\models\Notification.js">
         <metrics statements="28" coveredstatements="28" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
         <line num="1" count="1" type="stmt"/>
         <line num="2" count="1" type="stmt"/>
@@ -854,7 +854,7 @@
         <line num="27" count="1" type="stmt"/>
         <line num="28" count="1" type="stmt"/>
       </file>
-      <file name="Slot.js" path="/Users/dorhuri/Desktop/assignment/server-CutThe/CutThe-API/new folder/CutThe-API/models/Slot.js">
+      <file name="Slot.js" path="C:\Project\API\models\Slot.js">
         <metrics statements="25" coveredstatements="25" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
         <line num="1" count="1" type="stmt"/>
         <line num="2" count="1" type="stmt"/>
@@ -882,7 +882,7 @@
         <line num="24" count="1" type="stmt"/>
         <line num="25" count="1" type="stmt"/>
       </file>
-      <file name="Waitlist.js" path="/Users/dorhuri/Desktop/assignment/server-CutThe/CutThe-API/new folder/CutThe-API/models/Waitlist.js">
+      <file name="WaitList.js" path="C:\Project\API\models\WaitList.js">
         <metrics statements="41" coveredstatements="41" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
         <line num="1" count="1" type="stmt"/>
         <line num="2" count="1" type="stmt"/>
