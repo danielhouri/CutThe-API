@@ -91,6 +91,22 @@ const createWaitlistByClient = async (req, res) => {
 
         const { barberId, locationId, date, duration, morning, afternoon, night } = req.body;
 
+        const existingWaitlistItem = await WaitList.findOne({
+            barber: barberId,
+            location: locationId,
+            client: client._id,
+            date: date,
+            duration: duration,
+            morning: morning,
+            afternoon: afternoon,
+            night: night
+        });
+
+        if (existingWaitlistItem) {
+            res.status(409).json({ message: "Waitlist item already exists" });
+            return;
+        }
+
         const waitlistItem = new WaitList({
             barber: barberId,
             location: locationId,
@@ -105,9 +121,10 @@ const createWaitlistByClient = async (req, res) => {
         await waitlistItem.save();
         res.status(201).send(waitlistItem);
     } catch (err) {
-        console.log(err)
+        console.log(err);
         res.status(400).send(err);
     }
 };
+
 
 module.exports = { createWaitlistByClient, createWaitlistEntry, getAllWaitlistEntries, getWaitlistEntryById, updateWaitlistEntry, deleteWaitlistEntry };
