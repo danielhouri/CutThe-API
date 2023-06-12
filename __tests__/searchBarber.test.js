@@ -106,8 +106,7 @@ describe('searchBarber', () => {
     const result = await searchBarber('City', 'Country', { latitude: 0, longitude: 0 },'true','true');
     // Extract the barber property from each result
     const resultBarbers = result.map(results => results.barber._id.toString());
-    console.log(resultBarbers)
-    console.log(expectedClosestBarbers)
+
     // Check if the resultBarbers contain the expectedClosestBarbers
     expect(resultBarbers).toEqual(expectedClosestBarbers);
     // Assert the result length

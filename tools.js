@@ -327,7 +327,7 @@ async function sendNotification(token, name, payload, clientId, barberId) {
     console.log('New notification created:', savedNotification);
 }
 
-async function findWaitListAppointment(barberId, name, locationId, date,_messageTranslate=messageTranslate,_sendToManyNotification=sendToManyNotification) {
+async function findWaitListAppointment(barberId, name, locationId, date, _messageTranslate = messageTranslate, _sendToManyNotification = sendToManyNotification) {
     /**
      * This function finds clients on the waiting list for a canceled appointment 
      * and sends notifications to them. It retrieves the waiting list clients for a 
@@ -543,7 +543,7 @@ const getTotalBookedHours = async (barberId) => {
     weekAgo.setDate(weekAgo.getDate() - 7);
     weekAgo.setHours(0, 0, 0, 0);
     const endOfLastDay = new Date(weekAgo);
-    endOfDay.setHours(23, 59, 59, 999);
+    endOfLastDay.setHours(23, 59, 59, 999);
 
     const bookedHoursPastWeek = await Appointment.aggregate([
         { $match: { barber: barberId, start_time: { $gte: weekAgo, $lte: endOfLastDay } } },
